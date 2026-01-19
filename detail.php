@@ -90,11 +90,11 @@
     </section>
 
     <!-- DETAIL SECTION -->
-    <section class="py-4">
+    <section class="py-5">
         <div class="container">
-            <div class="row">
+            <div class="row g-4">
                 <!-- IMAGE GALLERY -->
-                <div class="col-lg-8 mb-4">
+                <div class="col-lg-7 mb-4">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-0">
                             <!-- Main Image -->
@@ -122,99 +122,19 @@
                         </div>
                     </div>
 
-                    <!-- DESCRIPTION -->
-                    <div class="card border-0 shadow-sm mt-4">
-                        <div class="card-body p-4">
-                            <h4 class="fw-bold mb-3" style="color: var(--primary-color);">Deskripsi Iklan</h4>
-                            <p class="text-muted" style="white-space: pre-line; line-height: 1.8;">Jual Laptop Dell XPS 13 dalam kondisi bekas seperti baru. 
-
-Spesifikasi:
-- Processor: Intel Core i7 Gen 11
-- RAM: 16GB DDR4
-- Storage: 512GB NVMe SSD
-- Display: 13.4" FHD+ (1920x1200) Touchscreen
-- Graphics: Intel Iris Xe
-- Battery: Masih awet 6-8 jam pemakaian normal
-- Kondisi: 95% mulus, no minus
-
-Kelengkapan:
-✓ Unit laptop
-✓ Charger original
-✓ Box dan dus original
-✓ Nota pembelian (garansi resmi masih berlaku 6 bulan)
-
-Alasan jual: Upgrade ke model terbaru
-Laptop sangat terawat, jarang dibawa keluar rumah.
-Cocok untuk profesional, mahasiswa, atau content creator.
-
-Harga masih bisa nego tipis kalau serius.
-Lokasi: Jakarta Pusat, bisa COD atau kirim via JNE/Gojek.
-
-Minat serius langsung chat atau telpon!
-No hit and run ya, terima kasih 🙏</p>
-                        </div>
-                    </div>
-
-                    <!-- SIMILAR ADS -->
-                    <div class="mt-4">
-                        <h4 class="fw-bold mb-3" style="color: var(--primary-color);">Iklan Serupa</h4>
-                        <div class="row g-3">
-                            <!-- Similar Ad 1 -->
-                            <div class="col-6 col-md-4">
-                                <a href="detail.php?id=2" class="text-decoration-none text-dark">
-                                    <div class="card border-0 shadow-sm hover-lift">
-                                        <img src="https://placehold.co/250x200" alt="MacBook" class="card-img-top" style="height: 150px; object-fit: cover;">
-                                        <div class="card-body p-2">
-                                            <h6 class="card-title text-truncate small">MacBook Air M1 2020 256GB</h6>
-                                            <p class="fw-bold mb-1" style="color: var(--primary-color); font-size: 14px;">Rp 10.500.000</p>
-                                            <p class="text-muted small mb-0">Jakarta Selatan</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-
-                            <!-- Similar Ad 2 -->
-                            <div class="col-6 col-md-4">
-                                <a href="detail.php?id=3" class="text-decoration-none text-dark">
-                                    <div class="card border-0 shadow-sm hover-lift">
-                                        <img src="https://placehold.co/250x200" alt="Asus" class="card-img-top" style="height: 150px; object-fit: cover;">
-                                        <div class="card-body p-2">
-                                            <h6 class="card-title text-truncate small">Asus ROG Gaming Laptop</h6>
-                                            <p class="fw-bold mb-1" style="color: var(--primary-color); font-size: 14px;">Rp 8.500.000</p>
-                                            <p class="text-muted small mb-0">Bandung</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-
-                            <!-- Similar Ad 3 -->
-                            <div class="col-6 col-md-4">
-                                <a href="detail.php?id=4" class="text-decoration-none text-dark">
-                                    <div class="card border-0 shadow-sm hover-lift">
-                                        <img src="https://placehold.co/250x200" alt="Lenovo" class="card-img-top" style="height: 150px; object-fit: cover;">
-                                        <div class="card-body p-2">
-                                            <h6 class="card-title text-truncate small">Lenovo ThinkPad X1 Carbon</h6>
-                                            <p class="fw-bold mb-1" style="color: var(--primary-color); font-size: 14px;">Rp 7.200.000</p>
-                                            <p class="text-muted small mb-0">Surabaya</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- SIDEBAR INFO -->
-                <div class="col-lg-4">
+                <div class="col-lg-5">
                     <!-- PRICE & ACTION -->
-                    <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+                    <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <h2 class="fw-bold mb-0" style="color: var(--primary-color); font-size: 32px;">Rp 5.500.000</h2>
+                                    <h2 class="fw-bold mb-0" style="color: var(--primary-color); font-size: 28px;">Rp 5.500.000</h2>
                                     <p class="text-muted small mb-0">Harga bisa nego</p>
                                 </div>
-                                <button class="btn btn-light" id="favoriteBtn" onclick="toggleFavorite()">
+                                <button class="btn btn-light" id="favoriteBtn" onclick="toggleFavorite()" title="Simpan iklan">
                                     <i class="far fa-heart fa-lg"></i>
                                 </button>
                             </div>
@@ -223,87 +143,80 @@ No hit and run ya, terima kasih 🙏</p>
 
                             <div class="mb-3">
                                 <p class="mb-2">
-                                    <i class="fas fa-map-marker-alt text-muted"></i>
+                                    <i class="fas fa-map-marker-alt" style="color: var(--secondary-color);"></i>
                                     <span class="ms-2">Jakarta Pusat</span>
                                 </p>
                                 <p class="mb-2">
-                                    <i class="fas fa-clock text-muted"></i>
+                                    <i class="fas fa-clock" style="color: var(--secondary-color);"></i>
                                     <span class="ms-2 text-muted">Diposting 2 jam yang lalu</span>
                                 </p>
                                 <p class="mb-0">
-                                    <i class="fas fa-tag text-muted"></i>
+                                    <i class="fas fa-tag" style="color: var(--secondary-color);"></i>
                                     <a href="category.php?id=1" class="ms-2 text-decoration-none" style="color: var(--primary-color);">Elektronik</a>
                                 </p>
                             </div>
 
                             <hr>
 
-                            <!-- SELLER INFO -->
-                            <div class="mb-3">
-                                <h6 class="fw-bold mb-3" style="color: var(--primary-color);">Informasi Penjual</h6>
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                        <i class="fas fa-user fa-lg text-white"></i>
-                                    </div>
-                                    <div class="ms-3">
-                                        <h6 class="mb-0 fw-bold">Ahmad Fauzi</h6>
-                                        <p class="text-muted small mb-0">Bergabung sejak Jan 2024</p>
-                                    </div>
-                                </div>
-                                <a href="profile.php?id=1" class="btn btn-outline-secondary w-100 mb-2">
-                                    <i class="fas fa-user me-2"></i>Lihat Profil
-                                </a>
-                            </div>
-
-                            <hr>
-
                             <!-- CONTACT BUTTONS -->
-                            <div>
-                                <button class="btn w-100 mb-2 py-3" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold; font-size: 16px;">
+                            <div class="mb-3">
+                                <button class="btn w-100 mb-2 py-3" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold; font-size: 14px; border: none;">
                                     <i class="fas fa-phone me-2"></i>Hubungi Penjual
                                 </button>
-                                <button class="btn btn-outline-dark w-100 py-3" style="font-weight: bold; font-size: 16px;" data-bs-toggle="modal" data-bs-target="#chatModal">
+                                <button class="btn btn-outline-dark w-100 py-3" style="font-weight: bold; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#chatModal">
                                     <i class="fas fa-comment-dots me-2"></i>Chat
                                 </button>
                             </div>
 
-                            <div class="mt-3">
-                                <div class="alert alert-warning small mb-0" role="alert">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    <strong>Tips Aman Berbelanja:</strong>
-                                    <ul class="mb-0 mt-2 ps-3">
-                                        <li>Bertemu langsung dengan penjual</li>
-                                        <li>Periksa barang sebelum membayar</li>
-                                        <li>Jangan transfer uang sebelum melihat barang</li>
-                                    </ul>
-                                </div>
+                            <div class="alert alert-warning small mb-0" role="alert" style="font-size: 12px;">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Tips Aman:</strong> Bertemu langsung, periksa barang, jangan transfer dulu
                             </div>
                         </div>
                     </div>
 
+                    <!-- SELLER INFO -->
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-3" style="color: var(--primary-color);">Informasi Penjual</h6>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user fa-lg text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold">Ahmad Fauzi</h6>
+                                    <p class="text-muted small mb-0">Bergabung sejak Jan 2024</p>
+                                </div>
+                            </div>
+                            <a href="profile.php?id=1" class="btn btn-outline-secondary w-100 btn-sm">
+                                <i class="fas fa-user me-2"></i>Lihat Profil
+                            </a>
+                        </div>
+                    </div>
+
                     <!-- AD DETAILS -->
-                    <div class="card border-0 shadow-sm mt-3">
+                    <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body p-4">
                             <h6 class="fw-bold mb-3" style="color: var(--primary-color);">Detail Iklan</h6>
                             <table class="table table-sm table-borderless">
                                 <tbody>
                                     <tr>
-                                        <td class="text-muted">ID Iklan</td>
-                                        <td class="fw-bold text-end">#AD00001</td>
+                                        <td class="text-muted small">ID Iklan</td>
+                                        <td class="fw-bold text-end small">#AD00001</td>
                                     </tr>
                                     <tr>
-                                        <td class="text-muted">Kondisi</td>
+                                        <td class="text-muted small">Kondisi</td>
                                         <td class="text-end">
                                             <span class="badge bg-warning text-dark">Bekas</span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="text-muted">Dilihat</td>
-                                        <td class="fw-bold text-end">1,234 kali</td>
+                                        <td class="text-muted small">Dilihat</td>
+                                        <td class="fw-bold text-end small">1,234 kali</td>
                                     </tr>
                                     <tr>
-                                        <td class="text-muted">Disimpan</td>
-                                        <td class="fw-bold text-end">56 kali</td>
+                                        <td class="text-muted small">Disimpan</td>
+                                        <td class="fw-bold text-end small">56 kali</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -311,20 +224,20 @@ No hit and run ya, terima kasih 🙏</p>
                     </div>
 
                     <!-- SHARE -->
-                    <div class="card border-0 shadow-sm mt-3">
+                    <div class="card border-0 shadow-sm">
                         <div class="card-body p-4">
                             <h6 class="fw-bold mb-3" style="color: var(--primary-color);">Bagikan</h6>
                             <div class="d-flex gap-2">
-                                <a href="#" class="btn btn-outline-primary flex-fill">
+                                <a href="#" class="btn btn-outline-primary flex-fill btn-sm">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
-                                <a href="#" class="btn btn-outline-info flex-fill">
+                                <a href="#" class="btn btn-outline-info flex-fill btn-sm">
                                     <i class="fab fa-twitter"></i>
                                 </a>
-                                <a href="#" class="btn btn-outline-success flex-fill">
+                                <a href="#" class="btn btn-outline-success flex-fill btn-sm">
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
-                                <a href="#" class="btn btn-outline-secondary flex-fill">
+                                <a href="#" class="btn btn-outline-secondary flex-fill btn-sm">
                                     <i class="fas fa-link"></i>
                                 </a>
                             </div>
@@ -332,39 +245,9 @@ No hit and run ya, terima kasih 🙏</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- CHAT MODAL -->
-    <div class="modal fade" id="chatModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: var(--primary-color); color: white;">
-                    <h5 class="modal-title">Chat dengan Penjual</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Pesan Anda</label>
-                            <textarea class="form-control" rows="4" placeholder="Halo, saya tertarik dengan produk Anda..."></textarea>
-                        </div>
-                        <div class="alert alert-info small">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Silakan login terlebih dahulu untuk dapat mengirim pesan ke penjual.
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <a href="auth/login.php" class="btn" style="background-color: var(--secondary-color); color: var(--primary-color);">Login untuk Chat</a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- FOOTER -->
-    <footer style="background-color: var(--primary-color); color: white;" class="mt-5">
+    <footer style="background-color: var(--primary-color); color: white;">
         <div class="container py-5">
             <div class="row">
                 <div class="col-md-3 mb-4">
@@ -411,7 +294,6 @@ No hit and run ya, terima kasih 🙏</p>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Change main image when clicking thumbnail
