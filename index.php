@@ -269,7 +269,7 @@
                             <a href="ad-detail.php?id=1" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
-                                        <img src="https://via.placeholder.com/250x200?text=Laptop" alt="Laptop Dell XPS" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="https://placehold.co/600x400" alt="Laptop Dell XPS" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
                                         <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                             <i class="far fa-heart"></i>
@@ -292,7 +292,7 @@
                             <a href="ad-detail.php?id=2" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
-                                        <img src="https://via.placeholder.com/250x200?text=iPhone" alt="iPhone 12" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="https://placehold.co/600x400" alt="iPhone 12" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
                                         <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                             <i class="far fa-heart"></i>
@@ -315,7 +315,7 @@
                             <a href="ad-detail.php?id=3" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
-                                        <img src="https://via.placeholder.com/250x200?text=Motor" alt="Sepeda Motor" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="https://placehold.co/600x400" alt="Sepeda Motor" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                             <i class="far fa-heart"></i>
                                         </button>
@@ -337,7 +337,7 @@
                             <a href="ad-detail.php?id=4" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
-                                        <img src="https://via.placeholder.com/250x200?text=Apartemen" alt="Apartemen" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="https://placehold.co/600x400" alt="Apartemen" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
                                         <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                             <i class="far fa-heart"></i>
@@ -360,7 +360,7 @@
                             <a href="ad-detail.php?id=5" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
-                                        <img src="https://via.placeholder.com/250x200?text=Sofa" alt="Sofa" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="https://placehold.co/600x400" alt="Sofa" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                             <i class="far fa-heart"></i>
                                         </button>
@@ -382,7 +382,7 @@
                             <a href="ad-detail.php?id=6" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
-                                        <img src="https://via.placeholder.com/250x200?text=Kamera" alt="Kamera DSLR" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="https://placehold.co/600x400" alt="Kamera DSLR" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
                                         <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                             <i class="far fa-heart"></i>
@@ -405,7 +405,7 @@
                             <a href="ad-detail.php?id=7" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
-                                        <img src="https://via.placeholder.com/250x200?text=Jam" alt="Jam Tangan" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="https://placehold.co/600x400" alt="Jam Tangan" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                             <i class="far fa-heart"></i>
                                         </button>
@@ -427,7 +427,7 @@
                             <a href="ad-detail.php?id=8" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
-                                        <img src="https://via.placeholder.com/250x200?text=Buku" alt="Buku" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="https://placehold.co/600x400" alt="Buku" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                             <i class="far fa-heart"></i>
                                         </button>
