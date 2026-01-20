@@ -22,7 +22,7 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold fs-5" href="index.php" style="color: var(--primary-color);">
+            <a class="navbar-brand fw-bold fs-5" href="landingPage.php" style="color: var(--primary-color);">
                 <i class="fas fa-store me-2"></i>OLX CLONE
             </a>
             
@@ -41,8 +41,8 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
-                    <a href="auth/login.php" class="nav-link">Login</a>
-                    <a href="ads/create.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
+                    <a href="login.php" class="nav-link">Login</a>
+                    <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
                         <i class="fas fa-plus me-1"></i> Jual
                     </a>
                 </div>
@@ -265,7 +265,7 @@
                     <div class="row g-3">
                         <!-- CARD IKLAN 1 -->
                         <div class="col-6 col-md-4 col-lg-3">
-                            <a href="ad-detail.php?id=1" class="text-decoration-none text-dark">
+                            <a href="detail.php?id=1" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
                                         <img src="https://placehold.co/600x400" alt="Laptop Dell XPS" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -288,7 +288,7 @@
 
                         <!-- CARD IKLAN 2 -->
                         <div class="col-6 col-md-4 col-lg-3">
-                            <a href="ad-detail.php?id=2" class="text-decoration-none text-dark">
+                            <a href="detail.php?id=2" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
                                         <img src="https://placehold.co/600x400" alt="iPhone 12" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -311,7 +311,7 @@
 
                         <!-- CARD IKLAN 3 -->
                         <div class="col-6 col-md-4 col-lg-3">
-                            <a href="ad-detail.php?id=3" class="text-decoration-none text-dark">
+                            <a href="detail.php?id=3" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
                                         <img src="https://placehold.co/600x400" alt="Sepeda Motor" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -333,7 +333,7 @@
 
                         <!-- CARD IKLAN 4 -->
                         <div class="col-6 col-md-4 col-lg-3">
-                            <a href="ad-detail.php?id=4" class="text-decoration-none text-dark">
+                            <a href="detail.php?id=4" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
                                         <img src="https://placehold.co/600x400" alt="Apartemen" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -356,7 +356,7 @@
 
                         <!-- CARD IKLAN 5 -->
                         <div class="col-6 col-md-4 col-lg-3">
-                            <a href="ad-detail.php?id=5" class="text-decoration-none text-dark">
+                            <a href="detail.php?id=5" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
                                         <img src="https://placehold.co/600x400" alt="Sofa" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -378,7 +378,7 @@
 
                         <!-- CARD IKLAN 6 -->
                         <div class="col-6 col-md-4 col-lg-3">
-                            <a href="ad-detail.php?id=6" class="text-decoration-none text-dark">
+                            <a href="detail.php?id=6" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
                                         <img src="https://placehold.co/600x400" alt="Kamera DSLR" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -401,7 +401,7 @@
 
                         <!-- CARD IKLAN 7 -->
                         <div class="col-6 col-md-4 col-lg-3">
-                            <a href="ad-detail.php?id=7" class="text-decoration-none text-dark">
+                            <a href="detail.php?id=7" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
                                         <img src="https://placehold.co/600x400" alt="Jam Tangan" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -423,7 +423,7 @@
 
                         <!-- CARD IKLAN 8 -->
                         <div class="col-6 col-md-4 col-lg-3">
-                            <a href="ad-detail.php?id=8" class="text-decoration-none text-dark">
+                            <a href="detail.php?id=8" class="text-decoration-none text-dark">
                                 <div class="card border-0 h-100 shadow-sm hover-lift">
                                     <div class="position-relative">
                                         <img src="https://placehold.co/600x400" alt="Buku" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -487,7 +487,7 @@
         <div class="container text-center">
             <h2 class="display-6 fw-bold mb-3">Punya Barang untuk Dijual?</h2>
             <p class="lead mb-4">Mulai berjualan hari ini dan dapatkan pembeli yang tepat untuk barang Anda</p>
-            <a href="ads/create.php" class="btn btn-warning btn-lg" style="background-color: var(--secondary-color); border: none; color: var(--primary-color); font-weight: bold;">
+            <a href="postAd.php" class="btn btn-warning btn-lg" style="background-color: var(--secondary-color); border: none; color: var(--primary-color); font-weight: bold;">
                 <i class="fas fa-plus me-2"></i>Posting Iklan Gratis
             </a>
         </div>

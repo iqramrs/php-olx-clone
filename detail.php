@@ -50,7 +50,7 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold fs-5" href="index.php" style="color: var(--primary-color);">
+            <a class="navbar-brand fw-bold fs-5" href="landingPage.php" style="color: var(--primary-color);">
                 <i class="fas fa-store me-2"></i>OLX CLONE
             </a>
             
@@ -69,8 +69,8 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
-                    <a href="auth/login.php" class="nav-link">Login</a>
-                    <a href="ads/create.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
+                    <a href="login.php" class="nav-link">Login</a>
+                    <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
                         <i class="fas fa-plus me-1"></i> Jual
                     </a>
                 </div>
@@ -83,7 +83,7 @@
         <div class="container">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="index.php" style="color: var(--primary-color);">Home</a></li>
+                    <li class="breadcrumb-item"><a href="landingPage.php" style="color: var(--primary-color);">Home</a></li>
                     <li class="breadcrumb-item"><a href="category.php?id=1" style="color: var(--primary-color);">Elektronik</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Laptop Dell XPS 13</li>
                 </ol>

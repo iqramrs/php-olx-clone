@@ -158,7 +158,7 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold fs-5" href="index.php" style="color: var(--primary-color);">
+            <a class="navbar-brand fw-bold fs-5" href="landingPage.php" style="color: var(--primary-color);">
                 <i class="fas fa-store me-2"></i>OLX CLONE
             </a>
             
@@ -168,10 +168,9 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
-                    <a href="index.php" class="nav-link">
+                    <a href="landingPage.php" class="nav-link">
                         <i class="fas fa-home me-1"></i>Beranda
                     </a>
-                    <a href="login.php" class="nav-link">Login</a>
                 </div>
             </div>
         </div>
@@ -314,7 +313,7 @@
                 <!-- BUTTONS -->
                 <div class="form-section">
                     <div class="d-flex gap-3 justify-content-center">
-                        <a href="index.php" class="btn btn-cancel px-5">
+                        <a href="landingPage.php" class="btn btn-cancel px-5">
                             <i class="fas fa-times me-2"></i>Batal
                         </a>
                         <button type="submit" class="btn btn-secondary-custom px-5">

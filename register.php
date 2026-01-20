@@ -133,10 +133,10 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-light bg-white border-bottom">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold fs-5" href="index.php" style="color: var(--primary-color);">
+            <a class="navbar-brand fw-bold fs-5" href="landingPage.php" style="color: var(--primary-color);">
                 <i class="fas fa-store me-2"></i>OLX CLONE
             </a>
-            <a href="index.php" class="btn btn-outline-secondary btn-sm">
+            <a href="landingPage.php" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-home me-1"></i>Kembali ke Beranda
             </a>
         </div>
