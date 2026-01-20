@@ -14,7 +14,6 @@
             --primary-color: #002f34;
             --secondary-color: #ffd500;
             --light-gray: #f5f5f5;
-            --border-color: #e6e6e6;
         }
         
         .thumbnail-image {
@@ -71,7 +70,6 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
                     <a href="auth/login.php" class="nav-link">Login</a>
-                    <a href="auth/register.php" class="nav-link">Daftar</a>
                     <a href="ads/create.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
                         <i class="fas fa-plus me-1"></i> Jual
                     </a>
@@ -125,7 +123,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 <!-- SIDEBAR INFO -->
@@ -167,7 +164,7 @@
                                 <button class="btn w-100 mb-2 py-3" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold; font-size: 14px; border: none;">
                                     <i class="fas fa-phone me-2"></i>Hubungi Penjual
                                 </button>
-                                <button class="btn btn-outline-dark w-100 py-3" style="font-weight: bold; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#chatModal">
+                                <button class="btn btn-outline-dark w-100 py-3" style="font-weight: bold; font-size: 14px;">
                                     <i class="fas fa-comment-dots me-2"></i>Chat
                                 </button>
                             </div>
@@ -249,10 +246,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
 
-        </section>
-
-        <!-- FOOTER -->
+    <!-- FOOTER -->
         <footer style="background-color: var(--primary-color); color: white; width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);">
             <div class="container py-5">
                 <div class="row">
@@ -332,17 +329,6 @@
                 btn.style.color = '';
             }
         }
-
-        // Hover effect for similar ads
-        document.querySelectorAll('.hover-lift').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
-                this.style.transition = 'transform 0.3s ease';
-            });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
 
         // Phone number reveal (example)
         document.querySelector('.btn[style*="background-color: var(--secondary-color)"]').addEventListener('click', function() {

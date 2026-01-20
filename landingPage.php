@@ -42,7 +42,6 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
                     <a href="auth/login.php" class="nav-link">Login</a>
-                    <a href="auth/register.php" class="nav-link">Daftar</a>
                     <a href="ads/create.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
                         <i class="fas fa-plus me-1"></i> Jual
                     </a>
