@@ -8,13 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
     <style>
         :root {
             --primary-color: #002f34;
             --secondary-color: #ffd500;
             --light-gray: #f5f5f5;
-            --border-color: #e6e6e6;
         }
     </style>
 </head>
@@ -453,7 +451,7 @@
                                 </a>
                             </li>
                             <li class="page-item active">
-                                <a class="page-link" href="#" style="background-color: var(--secondary-color); border-color: var(--secondary-color); color: var(--primary-color);">1</a>
+                                <a class="page-link" href="#" style="background-color: var(--secondary-color); color: var(--primary-color);">1</a>
                             </li>
                             <li class="page-item">
                                 <a class="page-link" href="#" style="color: var(--primary-color);">2</a>
