@@ -41,6 +41,10 @@
             max-height: 100%;
             object-fit: contain;
         }
+
+        body {
+            overflow-x: hidden;
+        }
     </style>
 </head>
 <body>
@@ -90,12 +94,12 @@
     </section>
 
     <!-- DETAIL SECTION -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row g-4">
+    <section class="pt-5 pb-0">
+        <div class="container px-4 px-md-5">
+            <div class="row gx-4 gy-0">
                 <!-- IMAGE GALLERY -->
                 <div class="col-lg-7 mb-4">
-                    <div class="card border-0 shadow-sm">
+                    <div class="card border-0 shadow-sm mb-0">
                         <div class="card-body p-0">
                             <!-- Main Image -->
                             <div class="main-image-container" id="mainImageContainer">
@@ -224,7 +228,7 @@
                     </div>
 
                     <!-- SHARE -->
-                    <div class="card border-0 shadow-sm">
+                    <div class="card border-0 shadow-sm mb-0">
                         <div class="card-body p-4">
                             <h6 class="fw-bold mb-3" style="color: var(--primary-color);">Bagikan</h6>
                             <div class="d-flex gap-2">
@@ -246,53 +250,55 @@
                 </div>
             </div>
 
-    <!-- FOOTER -->
-    <footer style="background-color: var(--primary-color); color: white;">
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-md-3 mb-4">
-                    <h5 class="fw-bold mb-3">Tentang Kami</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white-50 text-decoration-none">Tentang OLX</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Blog</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Karir</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Kebijakan Privasi</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h5 class="fw-bold mb-3">Bantuan</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white-50 text-decoration-none">Hubungi Kami</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">FAQ</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Keamanan</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Cara Berbelanja</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h5 class="fw-bold mb-3">Mitra</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white-50 text-decoration-none">Mitra Penjual</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Integasi API</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Promosi</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none">Advertising</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h5 class="fw-bold mb-3">Ikuti Kami</h5>
-                    <div class="d-flex gap-3">
-                        <a href="#" class="text-white-50"><i class="fab fa-facebook-f fa-lg"></i></a>
-                        <a href="#" class="text-white-50"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-white-50"><i class="fab fa-instagram fa-lg"></i></a>
-                        <a href="#" class="text-white-50"><i class="fab fa-youtube fa-lg"></i></a>
+        </section>
+
+        <!-- FOOTER -->
+        <footer style="background-color: var(--primary-color); color: white; width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);">
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-md-3 mb-4">
+                        <h5 class="fw-bold mb-3">Tentang Kami</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-white-50 text-decoration-none">Tentang OLX</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">Blog</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">Karir</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">Kebijakan Privasi</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <h5 class="fw-bold mb-3">Bantuan</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-white-50 text-decoration-none">Hubungi Kami</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">FAQ</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">Keamanan</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">Cara Berbelanja</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <h5 class="fw-bold mb-3">Mitra</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-white-50 text-decoration-none">Mitra Penjual</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">Integasi API</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">Promosi</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none">Advertising</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <h5 class="fw-bold mb-3">Ikuti Kami</h5>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="text-white-50"><i class="fab fa-facebook-f fa-lg"></i></a>
+                            <a href="#" class="text-white-50"><i class="fab fa-twitter fa-lg"></i></a>
+                            <a href="#" class="text-white-50"><i class="fab fa-instagram fa-lg"></i></a>
+                            <a href="#" class="text-white-50"><i class="fab fa-youtube fa-lg"></i></a>
+                        </div>
                     </div>
                 </div>
+                <hr class="bg-white-50">
+                <div class="text-center text-white-50">
+                    <p>&copy; 2026 OLX Clone. Semua hak dilindungi.</p>
+                </div>
             </div>
-            <hr class="bg-white-50">
-            <div class="text-center text-white-50">
-                <p>&copy; 2026 OLX Clone. Semua hak dilindungi.</p>
-            </div>
-        </div>
-    </footer>
+        </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
