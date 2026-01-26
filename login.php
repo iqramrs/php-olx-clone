@@ -1,3 +1,67 @@
+<?php
+session_start();
+
+// Redirect if already logged in
+if (isset($_SESSION['user_id'])) {
+    header('Location: landingPage.php');
+    exit;
+}
+
+require_once 'config.php';
+
+$error = '';
+$email = '';
+
+// Handle login form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = htmlspecialchars(trim($_POST['email'] ?? ''));
+    $password = $_POST['password'] ?? '';
+    $remember = isset($_POST['remember']);
+
+    // Validation
+    if (empty($email)) {
+        $error = 'Email wajib diisi!';
+    } elseif (empty($password)) {
+        $error = 'Password wajib diisi!';
+    } else {
+        try {
+            // Query user by email
+            $query = "SELECT id, name, email, password FROM users WHERE email = ? LIMIT 1";
+            $stmt = $pdo->prepare($query);
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+
+            if (!$user) {
+                // Email not found - suggest registration
+                $error = 'Email belum terdaftar.';
+            } elseif (!password_verify($password, $user['password'])) {
+                // Email found but password incorrect
+                $error = 'Password salah!';
+            } else {
+                // Login successful
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_email'] = $user['email'];
+
+                // Remember me functionality
+                if ($remember) {
+                    setcookie('user_email', $email, time() + (30 * 24 * 60 * 60), '/');
+                }
+
+                // Redirect to landing page
+                header('Location: landingPage.php');
+                exit;
+            }
+        } catch (PDOException $e) {
+            $error = 'Terjadi kesalahan sistem. Coba lagi nanti.';
+            error_log($e->getMessage());
+        }
+    }
+}
+
+// Get remembered email from cookie
+$remembered_email = $_COOKIE['user_email'] ?? '';
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -109,6 +173,32 @@
         .text-primary-custom:hover {
             color: #004d54 !important;
         }
+
+        .error-message {
+            display: none;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-control.is-invalid,
+        .form-select.is-invalid {
+            border-color: #dc3545;
+        }
+
+        .form-control.is-invalid:focus,
+        .form-select.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .alert-danger {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -137,16 +227,24 @@
             <!-- Login Card -->
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
-                    <form action="auth/login_process.php" method="POST">
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i><?= htmlspecialchars($error) ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <?php endif; ?>
+
+                    <form id="loginForm" action="login.php" method="POST">
                         <!-- Email -->
                         <div class="mb-3">
-                            <label for="email" class="form-label fw-semibold">Email atau Username</label>
+                            <label for="email" class="form-label fw-semibold">Email</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-white">
                                     <i class="fas fa-envelope text-muted"></i>
                                 </span>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Masukkan email atau username" required>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email" required value="<?= htmlspecialchars($email) ?>">
                             </div>
+                            <div class="error-message" id="emailError"></div>
                         </div>
 
                         <!-- Password -->
@@ -161,6 +259,7 @@
                                     <i class="fas fa-eye" id="toggleIcon"></i>
                                 </button>
                             </div>
+                            <div class="error-message" id="passwordError"></div>
                         </div>
 
                         <!-- Remember & Forgot -->
@@ -257,14 +356,71 @@
         }
 
         // Form validation
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
 
-            if (!email || !password) {
+            // Reset error messages
+            document.getElementById('emailError').classList.remove('show');
+            document.getElementById('passwordError').classList.remove('show');
+
+            // Reset input styling
+            email.classList.remove('is-invalid');
+            password.classList.remove('is-invalid');
+
+            let isValid = true;
+
+            // Validate email
+            if (!email.value.trim()) {
+                showError('emailError', 'Email wajib diisi!');
+                email.classList.add('is-invalid');
+                isValid = false;
+            } else if (!isValidEmail(email.value)) {
+                showError('emailError', 'Format email tidak valid!');
+                email.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate password
+            if (!password.value) {
+                showError('passwordError', 'Password wajib diisi!');
+                password.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            if (!isValid) {
                 e.preventDefault();
-                alert('Mohon lengkapi semua field!');
                 return false;
+            }
+
+            return true;
+        });
+
+        // Helper function to show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+
+        // Helper function to validate email format
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Real-time validation
+        document.getElementById('email').addEventListener('blur', function() {
+            if (this.value && isValidEmail(this.value)) {
+                this.classList.remove('is-invalid');
+                document.getElementById('emailError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('password').addEventListener('blur', function() {
+            if (this.value) {
+                this.classList.remove('is-invalid');
+                document.getElementById('passwordError').classList.remove('show');
             }
         });
     </script>

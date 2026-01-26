@@ -1,3 +1,63 @@
+<?php
+require_once 'config.php';
+
+$error = [];
+$success = false;
+
+// Process registration
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+    
+    // Validation
+    if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
+        $error = 'Semua field wajib diisi!';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Format email tidak valid!';
+    } elseif (strlen($email) > 50) {
+        $error = 'Email maksimal 50 karakter!';
+    } elseif (strlen($name) > 100) {
+        $error = 'Nama maksimal 100 karakter!';
+    } elseif (strlen($password) < 8) {
+        $error = 'Password minimal 8 karakter!';
+    } elseif ($password !== $confirm_password) {
+        $error = 'Password dan konfirmasi password tidak sama!';
+    } else {
+        try {
+            // Check if email already exists
+            $sql = "SELECT id FROM users WHERE email = :email";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['email' => $email]);
+            
+            if ($stmt->fetch()) {
+                $error = 'Email sudah terdaftar!';
+            } else {
+                // Hash password
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                // Insert new user
+                $sql = "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => $hashed_password
+                ]);
+                
+                $success = 'Registrasi berhasil! Silakan login.';
+                
+                // Redirect to login after 2 seconds
+                header("refresh:2;url=login.php");
+            }
+        } catch (PDOException $e) {
+            error_log("Registration Error: " . $e->getMessage());
+            $error = 'Terjadi kesalahan sistem. Silakan coba lagi.';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -127,6 +187,39 @@
         .strength-weak { background-color: #dc3545; width: 33%; }
         .strength-medium { background-color: #ffc107; width: 66%; }
         .strength-strong { background-color: #28a745; width: 100%; }
+
+        .error-message {
+            display: none;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-control.is-invalid,
+        .form-select.is-invalid {
+            border-color: #dc3545;
+        }
+
+        .form-control.is-invalid:focus,
+        .form-select.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .success-message {
+            display: none;
+            color: #28a745;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -152,19 +245,34 @@
                 <p class="text-muted">Bergabung dan mulai jual beli sekarang</p>
             </div>
 
+            <?php if ($error): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i><?= htmlspecialchars($error) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($success): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i><?= htmlspecialchars($success) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <?php endif; ?>
+
             <!-- Register Card -->
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
-                    <form action="auth/register_process.php" method="POST" id="registerForm">
+                    <form action="" method="POST" id="registerForm">
                         <!-- Nama Lengkap -->
                         <div class="mb-3">
-                            <label for="fullname" class="form-label fw-semibold">Nama Lengkap</label>
+                            <label for="name" class="form-label fw-semibold">Nama Lengkap</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-white">
                                     <i class="fas fa-user text-muted"></i>
                                 </span>
-                                <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Masukkan nama lengkap" required>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan nama lengkap" required maxlength="100" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
                             </div>
+                            <div class="error-message" id="nameError"></div>
                         </div>
 
                         <!-- Email -->
@@ -174,31 +282,9 @@
                                 <span class="input-group-text bg-white">
                                     <i class="fas fa-envelope text-muted"></i>
                                 </span>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="contoh@email.com" required>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="contoh@email.com" required maxlength="50" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                             </div>
-                        </div>
-
-                        <!-- Username -->
-                        <div class="mb-3">
-                            <label for="username" class="form-label fw-semibold">Username</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white">
-                                    <i class="fas fa-at text-muted"></i>
-                                </span>
-                                <input type="text" class="form-control" id="username" name="username" placeholder="username_unik" required>
-                            </div>
-                            <small class="text-muted">Username harus unik dan minimal 4 karakter</small>
-                        </div>
-
-                        <!-- Nomor Telepon -->
-                        <div class="mb-3">
-                            <label for="phone" class="form-label fw-semibold">Nomor Telepon</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white">
-                                    <i class="fas fa-phone text-muted"></i>
-                                </span>
-                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="08xxxxxxxxxx" required>
-                            </div>
+                            <div class="error-message" id="emailError"></div>
                         </div>
 
                         <!-- Password -->
@@ -217,6 +303,7 @@
                                 <div class="password-strength-bar" id="strengthBar"></div>
                             </div>
                             <small class="text-muted" id="strengthText"></small>
+                            <div class="error-message" id="passwordError"></div>
                         </div>
 
                         <!-- Confirm Password -->
@@ -231,6 +318,7 @@
                                     <i class="fas fa-eye" id="toggleIcon2"></i>
                                 </button>
                             </div>
+                            <div class="error-message" id="confirmPasswordError"></div>
                         </div>
 
                         <!-- Terms & Conditions -->
@@ -240,6 +328,7 @@
                                 Saya setuju dengan <a href="#" class="text-primary-custom text-decoration-none">Syarat & Ketentuan</a> 
                                 dan <a href="#" class="text-primary-custom text-decoration-none">Kebijakan Privasi</a>
                             </label>
+                            <div class="error-message" id="termsError"></div>
                         </div>
 
                         <!-- Register Button -->
@@ -354,57 +443,121 @@
 
         // Form validation
         document.getElementById('registerForm').addEventListener('submit', function(e) {
-            const fullname = document.getElementById('fullname').value;
-            const email = document.getElementById('email').value;
-            const username = document.getElementById('username').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            const terms = document.getElementById('terms').checked;
+            const name = document.getElementById('name');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirm_password');
+            const terms = document.getElementById('terms');
 
-            // Check if all fields are filled
-            if (!fullname || !email || !username || !phone || !password || !confirmPassword) {
-                e.preventDefault();
-                alert('Mohon lengkapi semua field!');
-                return false;
+            // Reset error messages
+            document.getElementById('nameError').classList.remove('show');
+            document.getElementById('emailError').classList.remove('show');
+            document.getElementById('passwordError').classList.remove('show');
+            document.getElementById('confirmPasswordError').classList.remove('show');
+            document.getElementById('termsError').classList.remove('show');
+
+            // Reset input styling
+            name.classList.remove('is-invalid');
+            email.classList.remove('is-invalid');
+            password.classList.remove('is-invalid');
+            confirmPassword.classList.remove('is-invalid');
+
+            let isValid = true;
+
+            // Validate name
+            if (!name.value.trim()) {
+                showError('nameError', 'Nama lengkap wajib diisi!');
+                name.classList.add('is-invalid');
+                isValid = false;
             }
 
-            // Check username length
-            if (username.length < 4) {
-                e.preventDefault();
-                alert('Username minimal 4 karakter!');
-                return false;
+            // Validate email
+            if (!email.value.trim()) {
+                showError('emailError', 'Email wajib diisi!');
+                email.classList.add('is-invalid');
+                isValid = false;
+            } else if (!isValidEmail(email.value)) {
+                showError('emailError', 'Format email tidak valid!');
+                email.classList.add('is-invalid');
+                isValid = false;
             }
 
-            // Check password length
-            if (password.length < 8) {
-                e.preventDefault();
-                alert('Password minimal 8 karakter!');
-                return false;
+            // Validate password
+            if (!password.value) {
+                showError('passwordError', 'Password wajib diisi!');
+                password.classList.add('is-invalid');
+                isValid = false;
+            } else if (password.value.length < 8) {
+                showError('passwordError', 'Password minimal 8 karakter!');
+                password.classList.add('is-invalid');
+                isValid = false;
             }
 
-            // Check password match
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                alert('Password dan konfirmasi password tidak sama!');
-                return false;
+            // Validate confirm password
+            if (!confirmPassword.value) {
+                showError('confirmPasswordError', 'Konfirmasi password wajib diisi!');
+                confirmPassword.classList.add('is-invalid');
+                isValid = false;
+            } else if (password.value !== confirmPassword.value) {
+                showError('confirmPasswordError', 'Password tidak sama dengan konfirmasi password!');
+                confirmPassword.classList.add('is-invalid');
+                isValid = false;
             }
 
-            // Check phone format
-            if (!phone.match(/^08[0-9]{9,11}$/)) {
-                e.preventDefault();
-                alert('Format nomor telepon tidak valid! Gunakan format: 08xxxxxxxxxx');
-                return false;
+            // Validate terms
+            if (!terms.checked) {
+                showError('termsError', 'Anda harus menyetujui Syarat & Ketentuan!');
+                isValid = false;
             }
 
-            // Check terms
-            if (!terms) {
+            if (!isValid) {
                 e.preventDefault();
-                alert('Anda harus menyetujui Syarat & Ketentuan!');
                 return false;
             }
 
             return true;
+        });
+
+        // Helper function to show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+
+        // Helper function to validate email format
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Real-time validation
+        document.getElementById('name').addEventListener('blur', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+                document.getElementById('nameError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('email').addEventListener('blur', function() {
+            if (this.value && isValidEmail(this.value)) {
+                this.classList.remove('is-invalid');
+                document.getElementById('emailError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('password').addEventListener('blur', function() {
+            if (this.value.length >= 8) {
+                this.classList.remove('is-invalid');
+                document.getElementById('passwordError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('confirm_password').addEventListener('blur', function() {
+            if (this.value === document.getElementById('password').value) {
+                this.classList.remove('is-invalid');
+                document.getElementById('confirmPasswordError').classList.remove('show');
+            }
         });
     </script>
 </body>
