@@ -1,3 +1,58 @@
+<?php
+session_start();
+require_once 'config.php';
+
+// Fetch categories from database
+$categories = [];
+try {
+    $query = "SELECT id, name, icon FROM categories ORDER BY name ASC";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute();
+    $categories = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+}
+
+// Fetch ads from database with first image
+$ads = [];
+try {
+    $query = "SELECT 
+                a.id, 
+                a.title, 
+                a.slug, 
+                a.price, 
+                a.location,
+                a.created_at,
+                c.name as category_name,
+                (SELECT image FROM ad_images WHERE ad_id = a.id ORDER BY id ASC LIMIT 1) as first_image
+              FROM ads a
+              LEFT JOIN categories c ON a.category_id = c.id
+              ORDER BY a.id DESC
+              LIMIT 24";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute();
+    $ads = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+}
+
+// Helper function to format price
+function formatRupiah($price) {
+    return 'Rp ' . number_format($price, 0, ',', '.');
+}
+
+// Helper function to get time ago
+function timeAgo($datetime) {
+    $timestamp = strtotime($datetime);
+    $diff = time() - $timestamp;
+    
+    if ($diff < 60) return 'Baru saja';
+    if ($diff < 3600) return floor($diff / 60) . ' menit yang lalu';
+    if ($diff < 86400) return floor($diff / 3600) . ' jam yang lalu';
+    if ($diff < 604800) return floor($diff / 86400) . ' hari yang lalu';
+    return date('d M Y', $timestamp);
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -75,406 +130,58 @@
         <div class="container">
             <h2 class="mb-4 fw-bold" style="color: var(--primary-color);">Jelajahi Kategori</h2>
             <div class="row g-3">
-                <!-- Kategori 1 -->
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="category.php?id=1" class="text-decoration-none">
-                        <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
-                            <div class="card-body py-4">
-                                <i class="fas fa-mobile-alt fa-3x mb-3" style="color: var(--primary-color);"></i>
-                                <h5 class="card-title" style="color: var(--primary-color);">Elektronik</h5>
-                                <p class="text-muted small">1,234 Iklan</p>
+                        <?php if (empty($ads)): ?>
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                                <p class="text-muted">Belum ada iklan tersedia</p>
+                                <a href="postAd.php" class="btn btn-warning">Pasang Iklan Pertama</a>
                             </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Kategori 2 -->
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="category.php?id=2" class="text-decoration-none">
-                        <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
-                            <div class="card-body py-4">
-                                <i class="fas fa-home fa-3x mb-3" style="color: var(--primary-color);"></i>
-                                <h5 class="card-title" style="color: var(--primary-color);">Properti</h5>
-                                <p class="text-muted small">567 Iklan</p>
+                        <?php else: ?>
+                            <?php foreach ($ads as $ad): ?>
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <a href="detail.php?id=<?= htmlspecialchars($ad['id']) ?>" class="text-decoration-none text-dark">
+                                    <div class="card border-0 h-100 shadow-sm hover-lift">
+                                        <div class="position-relative">
+                                            <img src="<?= htmlspecialchars($ad['first_image'] ?: 'https://placehold.co/600x400?text=No+Image') ?>" 
+                                                 alt="<?= htmlspecialchars($ad['title']) ?>" 
+                                                 class="card-img-top" 
+                                                 style="height: 200px; object-fit: cover;">
+                                            <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" 
+                                                    style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title text-truncate" style="color: var(--primary-color);">
+                                                <?= htmlspecialchars($ad['title']) ?>
+                                            </h6>
+                                            <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">
+                                                <?= formatRupiah($ad['price']) ?>
+                                            </p>
+                                            <?php if ($ad['location']): ?>
+                                            <p class="mb-2 text-muted small">
+                                                <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ad['location']) ?>
+                                            </p>
+                                            <?php endif; ?>
+                                            <p class="text-muted small"><?= timeAgo($ad['created_at']) ?></p>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Kategori 3 -->
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="category.php?id=3" class="text-decoration-none">
-                        <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
-                            <div class="card-body py-4">
-                                <i class="fas fa-car fa-3x mb-3" style="color: var(--primary-color);"></i>
-                                <h5 class="card-title" style="color: var(--primary-color);">Kendaraan</h5>
-                                <p class="text-muted small">892 Iklan</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Kategori 4 -->
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="category.php?id=4" class="text-decoration-none">
-                        <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
-                            <div class="card-body py-4">
-                                <i class="fas fa-shirt fa-3x mb-3" style="color: var(--primary-color);"></i>
-                                <h5 class="card-title" style="color: var(--primary-color);">Fashion</h5>
-                                <p class="text-muted small">2,145 Iklan</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Kategori 5 -->
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="category.php?id=5" class="text-decoration-none">
-                        <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
-                            <div class="card-body py-4">
-                                <i class="fas fa-gamepad fa-3x mb-3" style="color: var(--primary-color);"></i>
-                                <h5 class="card-title" style="color: var(--primary-color);">Hobi & Hiburan</h5>
-                                <p class="text-muted small">678 Iklan</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Kategori 6 -->
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="category.php?id=6" class="text-decoration-none">
-                        <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
-                            <div class="card-body py-4">
-                                <i class="fas fa-book fa-3x mb-3" style="color: var(--primary-color);"></i>
-                                <h5 class="card-title" style="color: var(--primary-color);">Buku & Media</h5>
-                                <p class="text-muted small">456 Iklan</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Kategori 7 -->
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="category.php?id=7" class="text-decoration-none">
-                        <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
-                            <div class="card-body py-4">
-                                <i class="fas fa-couch fa-3x mb-3" style="color: var(--primary-color);"></i>
-                                <h5 class="card-title" style="color: var(--primary-color);">Furniture</h5>
-                                <p class="text-muted small">789 Iklan</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Kategori 8 -->
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="category.php" class="text-decoration-none">
-                        <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
-                            <div class="card-body py-4">
-                                <i class="fas fa-th-large fa-3x mb-3" style="color: var(--primary-color);"></i>
-                                <h5 class="card-title" style="color: var(--primary-color);">Semua Kategori</h5>
-                                <p class="text-muted small">Lihat Semua</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FILTER & ADS SECTION -->
-    <section class="py-5">
-        <div class="container-fluid px-4">
-            <div class="row">
-                <!-- SIDEBAR FILTER -->
-                <aside class="col-lg-3 mb-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header border-bottom" style="background-color: var(--light-gray);">
-                            <h5 class="mb-0" style="color: var(--primary-color);">Filter Pencarian</h5>
-                        </div>
-                        <div class="card-body">
-                            <!-- Harga Filter -->
-                            <div class="mb-4">
-                                <label class="form-label fw-bold" style="color: var(--primary-color);">Harga (Rp)</label>
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <input type="number" placeholder="Min" class="form-control" id="minPrice" min="0">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="number" placeholder="Max" class="form-control" id="maxPrice">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <!-- Lokasi Filter -->
-                            <div class="mb-4">
-                                <label class="form-label fw-bold" style="color: var(--primary-color);">Lokasi</label>
-                                <select class="form-select">
-                                    <option value="">Semua Lokasi</option>
-                                    <option value="jakarta">Jakarta</option>
-                                    <option value="surabaya">Surabaya</option>
-                                    <option value="bandung">Bandung</option>
-                                    <option value="medan">Medan</option>
-                                    <option value="semarang">Semarang</option>
-                                </select>
-                            </div>
-
-                            <hr>
-
-                            <!-- Kondisi Filter -->
-                            <div class="mb-4">
-                                <label class="fw-bold" style="color: var(--primary-color);">Kondisi</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="condition1" value="baru">
-                                    <label class="form-check-label" for="condition1">Baru</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="condition2" value="bekas">
-                                    <label class="form-check-label" for="condition2">Bekas</label>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <!-- Urutkan -->
-                            <div class="mb-4">
-                                <label class="form-label fw-bold" style="color: var(--primary-color);">Urutkan Berdasarkan</label>
-                                <select class="form-select">
-                                    <option value="">Terbaru</option>
-                                    <option value="price-asc">Harga Terendah</option>
-                                    <option value="price-desc">Harga Tertinggi</option>
-                                    <option value="popular">Paling Populer</option>
-                                </select>
-                            </div>
-
-                            <button class="btn w-100" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold;">Terapkan Filter</button>
-                        </div>
-                    </div>
-                </aside>
-
-                <!-- MAIN ADS GRID -->
-                <main class="col-lg-9">
-                    <div class="mb-4">
-                        <h2 class="fw-bold" style="color: var(--primary-color);">Iklan Terbaru</h2>
-                    </div>
-                    
-                    <div class="row g-3">
-                        <!-- CARD IKLAN 1 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <a href="detail.php?id=1" class="text-decoration-none text-dark">
-                                <div class="card border-0 h-100 shadow-sm hover-lift">
-                                    <div class="position-relative">
-                                        <img src="https://placehold.co/600x400" alt="Laptop Dell XPS" class="card-img-top" style="height: 200px; object-fit: cover;">
-                                        <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="far fa-heart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-truncate" style="color: var(--primary-color);">Laptop Dell XPS 13 Bekas Seperti Baru</h6>
-                                        <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">Rp 5.500.000</p>
-                                        <p class="mb-2 text-muted small">
-                                            <i class="fas fa-map-marker-alt"></i> Jakarta Pusat
-                                        </p>
-                                        <p class="text-muted small">2 jam yang lalu</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- CARD IKLAN 2 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <a href="detail.php?id=2" class="text-decoration-none text-dark">
-                                <div class="card border-0 h-100 shadow-sm hover-lift">
-                                    <div class="position-relative">
-                                        <img src="https://placehold.co/600x400" alt="iPhone 12" class="card-img-top" style="height: 200px; object-fit: cover;">
-                                        <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="far fa-heart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-truncate" style="color: var(--primary-color);">iPhone 12 Pro Max 256GB</h6>
-                                        <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">Rp 8.900.000</p>
-                                        <p class="mb-2 text-muted small">
-                                            <i class="fas fa-map-marker-alt"></i> Bandung
-                                        </p>
-                                        <p class="text-muted small">4 jam yang lalu</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- CARD IKLAN 3 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <a href="detail.php?id=3" class="text-decoration-none text-dark">
-                                <div class="card border-0 h-100 shadow-sm hover-lift">
-                                    <div class="position-relative">
-                                        <img src="https://placehold.co/600x400" alt="Sepeda Motor" class="card-img-top" style="height: 200px; object-fit: cover;">
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="far fa-heart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-truncate" style="color: var(--primary-color);">Honda PCX 150 2021 Istimewa</h6>
-                                        <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">Rp 18.500.000</p>
-                                        <p class="mb-2 text-muted small">
-                                            <i class="fas fa-map-marker-alt"></i> Surabaya
-                                        </p>
-                                        <p class="text-muted small">6 jam yang lalu</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- CARD IKLAN 4 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <a href="detail.php?id=4" class="text-decoration-none text-dark">
-                                <div class="card border-0 h-100 shadow-sm hover-lift">
-                                    <div class="position-relative">
-                                        <img src="https://placehold.co/600x400" alt="Apartemen" class="card-img-top" style="height: 200px; object-fit: cover;">
-                                        <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="far fa-heart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-truncate" style="color: var(--primary-color);">Apartemen 2 Kamar Tidur Mewah</h6>
-                                        <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">Rp 450.000.000</p>
-                                        <p class="mb-2 text-muted small">
-                                            <i class="fas fa-map-marker-alt"></i> Jakarta Selatan
-                                        </p>
-                                        <p class="text-muted small">1 hari yang lalu</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- CARD IKLAN 5 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <a href="detail.php?id=5" class="text-decoration-none text-dark">
-                                <div class="card border-0 h-100 shadow-sm hover-lift">
-                                    <div class="position-relative">
-                                        <img src="https://placehold.co/600x400" alt="Sofa" class="card-img-top" style="height: 200px; object-fit: cover;">
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="far fa-heart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-truncate" style="color: var(--primary-color);">Sofa Kulit Premium Bekas</h6>
-                                        <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">Rp 2.500.000</p>
-                                        <p class="mb-2 text-muted small">
-                                            <i class="fas fa-map-marker-alt"></i> Bandung
-                                        </p>
-                                        <p class="text-muted small">1 hari yang lalu</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- CARD IKLAN 6 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <a href="detail.php?id=6" class="text-decoration-none text-dark">
-                                <div class="card border-0 h-100 shadow-sm hover-lift">
-                                    <div class="position-relative">
-                                        <img src="https://placehold.co/600x400" alt="Kamera DSLR" class="card-img-top" style="height: 200px; object-fit: cover;">
-                                        <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="far fa-heart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-truncate" style="color: var(--primary-color);">Canon EOS 80D Lengkap Lensa</h6>
-                                        <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">Rp 6.200.000</p>
-                                        <p class="mb-2 text-muted small">
-                                            <i class="fas fa-map-marker-alt"></i> Jakarta Utara
-                                        </p>
-                                        <p class="text-muted small">2 hari yang lalu</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- CARD IKLAN 7 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <a href="detail.php?id=7" class="text-decoration-none text-dark">
-                                <div class="card border-0 h-100 shadow-sm hover-lift">
-                                    <div class="position-relative">
-                                        <img src="https://placehold.co/600x400" alt="Jam Tangan" class="card-img-top" style="height: 200px; object-fit: cover;">
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="far fa-heart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-truncate" style="color: var(--primary-color);">Rolex Submariner Automatic</h6>
-                                        <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">Rp 25.000.000</p>
-                                        <p class="mb-2 text-muted small">
-                                            <i class="fas fa-map-marker-alt"></i> Jakarta Pusat
-                                        </p>
-                                        <p class="text-muted small">3 hari yang lalu</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- CARD IKLAN 8 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <a href="detail.php?id=8" class="text-decoration-none text-dark">
-                                <div class="card border-0 h-100 shadow-sm hover-lift">
-                                    <div class="position-relative">
-                                        <img src="https://placehold.co/600x400" alt="Buku" class="card-img-top" style="height: 200px; object-fit: cover;">
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="far fa-heart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body p-3">
-                                        <h6 class="card-title text-truncate" style="color: var(--primary-color);">Buku Pemrograman PHP & MySQL</h6>
-                                        <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">Rp 85.000</p>
-                                        <p class="mb-2 text-muted small">
-                                            <i class="fas fa-map-marker-alt"></i> Surabaya
-                                        </p>
-                                        <p class="text-muted small">3 hari yang lalu</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
 
                     <!-- PAGINATION -->
+                    <?php if (!empty($ads)): ?>
                     <nav aria-label="Page navigation" class="mt-5">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item">
-                                <a class="page-link" href="#" style="color: var(--primary-color);">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                            </li>
                             <li class="page-item active">
                                 <a class="page-link" href="#" style="background-color: var(--secondary-color); color: var(--primary-color);">1</a>
                             </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" style="color: var(--primary-color);">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" style="color: var(--primary-color);">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" style="color: var(--primary-color);">4</a>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link" style="color: var(--primary-color);">...</span>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" style="color: var(--primary-color);">10</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" style="color: var(--primary-color);">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </li>
                         </ul>
                     </nav>
+                    <?php endif; ?>
                 </main>
             </div>
         </div>
