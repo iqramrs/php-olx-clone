@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once 'config.php';
 
@@ -22,7 +25,7 @@ try {
                 a.slug, 
                 a.price, 
                 a.location,
-                a.created_at,
+                a.release_at,
                 c.name as category_name,
                 (SELECT image FROM ad_images WHERE ad_id = a.id ORDER BY id ASC LIMIT 1) as first_image
               FROM ads a
@@ -68,6 +71,20 @@ function timeAgo($datetime) {
             --primary-color: #002f34;
             --secondary-color: #ffd500;
             --light-gray: #f5f5f5;
+        }
+        
+        .hover-shadow:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
         }
     </style>
 </head>
@@ -130,6 +147,107 @@ function timeAgo($datetime) {
         <div class="container">
             <h2 class="mb-4 fw-bold" style="color: var(--primary-color);">Jelajahi Kategori</h2>
             <div class="row g-3">
+                <?php if (empty($categories)): ?>
+                    <div class="col-12 text-center py-3">
+                        <p class="text-muted">Kategori belum tersedia</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($categories as $cat): ?>
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <a href="category.php?id=<?= htmlspecialchars($cat['id']) ?>" class="text-decoration-none">
+                            <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
+                                <div class="card-body py-4">
+                                    <i class="<?= htmlspecialchars($cat['icon'] ?: 'fas fa-tag') ?> fa-3x mb-3" style="color: var(--primary-color);"></i>
+                                    <h5 class="card-title" style="color: var(--primary-color);"><?= htmlspecialchars($cat['name']) ?></h5>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- FILTER & ADS SECTION -->
+    <section class="py-5">
+        <div class="container-fluid px-4">
+            <div class="row">
+                <!-- SIDEBAR FILTER -->
+                <aside class="col-lg-3 mb-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header border-bottom" style="background-color: var(--light-gray);">
+                            <h5 class="mb-0" style="color: var(--primary-color);">Filter Pencarian</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Harga Filter -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold" style="color: var(--primary-color);">Harga (Rp)</label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="number" placeholder="Min" class="form-control" id="minPrice" min="0">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="number" placeholder="Max" class="form-control" id="maxPrice">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <!-- Lokasi Filter -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold" style="color: var(--primary-color);">Lokasi</label>
+                                <select class="form-select">
+                                    <option value="">Semua Lokasi</option>
+                                    <option value="jakarta">Jakarta</option>
+                                    <option value="surabaya">Surabaya</option>
+                                    <option value="bandung">Bandung</option>
+                                    <option value="medan">Medan</option>
+                                    <option value="semarang">Semarang</option>
+                                </select>
+                            </div>
+
+                            <hr>
+
+                            <!-- Kondisi Filter -->
+                            <div class="mb-4">
+                                <label class="fw-bold" style="color: var(--primary-color);">Kondisi</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="condition1" value="baru">
+                                    <label class="form-check-label" for="condition1">Baru</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="condition2" value="bekas">
+                                    <label class="form-check-label" for="condition2">Bekas</label>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <!-- Urutkan -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold" style="color: var(--primary-color);">Urutkan Berdasarkan</label>
+                                <select class="form-select">
+                                    <option value="">Terbaru</option>
+                                    <option value="price-asc">Harga Terendah</option>
+                                    <option value="price-desc">Harga Tertinggi</option>
+                                    <option value="popular">Paling Populer</option>
+                                </select>
+                            </div>
+
+                            <button class="btn w-100" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold;">Terapkan Filter</button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- MAIN ADS GRID -->
+                <main class="col-lg-9">
+                    <div class="mb-4">
+                        <h2 class="fw-bold" style="color: var(--primary-color);">Iklan Terbaru</h2>
+                    </div>
+                    
+                    <div class="row g-3">
                         <?php if (empty($ads)): ?>
                             <div class="col-12 text-center py-5">
                                 <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
@@ -138,6 +256,7 @@ function timeAgo($datetime) {
                             </div>
                         <?php else: ?>
                             <?php foreach ($ads as $ad): ?>
+                            <!-- CARD IKLAN -->
                             <div class="col-6 col-md-4 col-lg-3">
                                 <a href="detail.php?id=<?= htmlspecialchars($ad['id']) ?>" class="text-decoration-none text-dark">
                                     <div class="card border-0 h-100 shadow-sm hover-lift">
@@ -146,6 +265,7 @@ function timeAgo($datetime) {
                                                  alt="<?= htmlspecialchars($ad['title']) ?>" 
                                                  class="card-img-top" 
                                                  style="height: 200px; object-fit: cover;">
+                                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Baru</span>
                                             <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2" 
                                                     style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                                                 <i class="far fa-heart"></i>
@@ -158,12 +278,10 @@ function timeAgo($datetime) {
                                             <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 18px;">
                                                 <?= formatRupiah($ad['price']) ?>
                                             </p>
-                                            <?php if ($ad['location']): ?>
                                             <p class="mb-2 text-muted small">
-                                                <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ad['location']) ?>
+                                                <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ad['location'] ?: 'Lokasi tidak tersedia') ?>
                                             </p>
-                                            <?php endif; ?>
-                                            <p class="text-muted small"><?= timeAgo($ad['created_at']) ?></p>
+                                            <p class="text-muted small"><?= timeAgo($ad['release_at']) ?></p>
                                         </div>
                                     </div>
                                 </a>
@@ -173,15 +291,25 @@ function timeAgo($datetime) {
                     </div>
 
                     <!-- PAGINATION -->
-                    <?php if (!empty($ads)): ?>
                     <nav aria-label="Page navigation" class="mt-5">
                         <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
                             <li class="page-item active">
-                                <a class="page-link" href="#" style="background-color: var(--secondary-color); color: var(--primary-color);">1</a>
+                                <a class="page-link" href="#" style="background-color: var(--secondary-color); color: var(--primary-color); border-color: var(--secondary-color);">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
                             </li>
                         </ul>
                     </nav>
-                    <?php endif; ?>
                 </main>
             </div>
         </div>
