@@ -1,9 +1,78 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once 'config.php';
+
+// Helpers
+function formatRupiah($price) {
+    return 'Rp ' . number_format((float)$price, 0, ',', '.');
+}
+
+function timeAgo($date) {
+    if (!$date) return '-';
+    $timestamp = strtotime($date);
+    $diff = time() - $timestamp;
+    if ($diff < 60) return 'Baru saja';
+    if ($diff < 3600) return floor($diff / 60) . ' menit yang lalu';
+    if ($diff < 86400) return floor($diff / 3600) . ' jam yang lalu';
+    if ($diff < 604800) return floor($diff / 86400) . ' hari yang lalu';
+    return date('d M Y', $timestamp);
+}
+
+$adId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($adId <= 0) {
+    header('Location: landingPage.php');
+    exit;
+}
+
+// Fetch ad detail
+$ad = null;
+try {
+    $stmt = $pdo->prepare("SELECT a.*, c.name AS category_name, u.name AS seller_name, u.created_at AS seller_created
+                           FROM ads a
+                           LEFT JOIN categories c ON a.category_id = c.id
+                           LEFT JOIN users u ON a.user_id = u.id
+                           WHERE a.id = :id
+                           LIMIT 1");
+    $stmt->execute([':id' => $adId]);
+    $ad = $stmt->fetch();
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+}
+
+if (!$ad) {
+    http_response_code(404);
+    echo '<!DOCTYPE html><html><body><p>Iklan tidak ditemukan.</p><a href="landingPage.php">Kembali</a></body></html>';
+    exit;
+}
+
+// Fetch ad images
+$images = [];
+try {
+    $stmt = $pdo->prepare("SELECT image FROM ad_images WHERE ad_id = :id ORDER BY id ASC");
+    $stmt->execute([':id' => $adId]);
+    $images = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+}
+
+if (empty($images)) {
+    $images = [['image' => 'https://placehold.co/600x400?text=No+Image']];
+}
+
+$mainImage = $images[0]['image'];
+$sellerName = $ad['seller_name'] ?: 'Pengguna';
+$sellerJoined = $ad['seller_created'] ? date('M Y', strtotime($ad['seller_created'])) : '-';
+$categoryLink = $ad['category_id'] ? 'landingPage.php?category=' . urlencode($ad['category_id']) : 'landingPage.php';
+$idLabel = '#AD' . str_pad($ad['id'], 5, '0', STR_PAD_LEFT);
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laptop Dell XPS 13 Bekas Seperti Baru - OLX Clone</title>
+    <title><?= htmlspecialchars($ad['title']) ?> - OLX Clone</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -83,8 +152,8 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="landingPage.php" style="color: var(--primary-color);">Home</a></li>
-                    <li class="breadcrumb-item"><a href="category.php?id=1" style="color: var(--primary-color);">Elektronik</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Laptop Dell XPS 13</li>
+                    <li class="breadcrumb-item"><a href="<?= htmlspecialchars($categoryLink) ?>" style="color: var(--primary-color);"><?= htmlspecialchars($ad['category_name'] ?: 'Kategori') ?></a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($ad['title']) ?></li>
                 </ol>
             </nav>
         </div>
@@ -100,26 +169,27 @@
                         <div class="card-body p-0">
                             <!-- Main Image -->
                             <div class="main-image-container" id="mainImageContainer">
-                                <img src="https://placehold.co/600x400" alt="Laptop Dell XPS 13" id="mainImage">
+                                <img src="<?= htmlspecialchars($mainImage) ?>" alt="<?= htmlspecialchars($ad['title']) ?>" id="mainImage">
                             </div>
                             
                             <!-- Thumbnail Gallery -->
                             <div class="p-3">
                                 <div class="row g-2">
+                                    <?php foreach ($images as $idx => $img): ?>
                                     <div class="col-3">
-                                        <img src="https://placehold.co/600x400" alt="Image 1" class="img-thumbnail thumbnail-image active" onclick="changeImage(this.src)">
+                                        <img src="<?= htmlspecialchars($img['image']) ?>" alt="Thumbnail <?= $idx + 1 ?>" class="img-thumbnail thumbnail-image <?= $idx === 0 ? 'active' : '' ?>" onclick="changeImage(this)">
                                     </div>
-                                    <div class="col-3">
-                                        <img src="https://placehold.co/600x400" alt="Image 2" class="img-thumbnail thumbnail-image" onclick="changeImage(this.src)">
-                                    </div>
-                                    <div class="col-3">
-                                        <img src="https://placehold.co/600x400" alt="Image 3" class="img-thumbnail thumbnail-image" onclick="changeImage(this.src)">
-                                    </div>
-                                    <div class="col-3">
-                                        <img src="https://placehold.co/600x400" alt="Image 4" class="img-thumbnail thumbnail-image" onclick="changeImage(this.src)">
-                                    </div>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- DESCRIPTION UNDER GALLERY -->
+                    <div class="card border-0 shadow-sm mt-4">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-3" style="color: var(--primary-color);">Deskripsi</h6>
+                            <p class="mb-0" style="white-space: pre-line;"><?= nl2br(htmlspecialchars($ad['description'] ?: 'Tidak ada deskripsi.')) ?></p>
                         </div>
                     </div>
                 </div>
@@ -131,7 +201,7 @@
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <h2 class="fw-bold mb-0" style="color: var(--primary-color); font-size: 28px;">Rp 5.500.000</h2>
+                                    <h2 class="fw-bold mb-0" style="color: var(--primary-color); font-size: 28px;"><?= formatRupiah($ad['price']) ?></h2>
                                     <p class="text-muted small mb-0">Harga bisa nego</p>
                                 </div>
                                 <button class="btn btn-light" id="favoriteBtn" onclick="toggleFavorite()" title="Simpan iklan">
@@ -139,20 +209,20 @@
                                 </button>
                             </div>
 
-                            <h5 class="fw-bold mb-3" style="color: var(--primary-color);">Laptop Dell XPS 13 Bekas Seperti Baru</h5>
+                            <h5 class="fw-bold mb-3" style="color: var(--primary-color);"><?= htmlspecialchars($ad['title']) ?></h5>
 
                             <div class="mb-3">
                                 <p class="mb-2">
                                     <i class="fas fa-map-marker-alt" style="color: var(--secondary-color);"></i>
-                                    <span class="ms-2">Jakarta Pusat</span>
+                                    <span class="ms-2"><?= htmlspecialchars($ad['location'] ?: 'Lokasi tidak tersedia') ?></span>
                                 </p>
                                 <p class="mb-2">
                                     <i class="fas fa-clock" style="color: var(--secondary-color);"></i>
-                                    <span class="ms-2 text-muted">Diposting 2 jam yang lalu</span>
+                                    <span class="ms-2 text-muted">Diposting <?= timeAgo($ad['release_at']) ?></span>
                                 </p>
                                 <p class="mb-0">
                                     <i class="fas fa-tag" style="color: var(--secondary-color);"></i>
-                                    <a href="category.php?id=1" class="ms-2 text-decoration-none" style="color: var(--primary-color);">Elektronik</a>
+                                    <a href="<?= htmlspecialchars($categoryLink) ?>" class="ms-2 text-decoration-none" style="color: var(--primary-color);"><?= htmlspecialchars($ad['category_name'] ?: 'Kategori') ?></a>
                                 </p>
                             </div>
 
@@ -184,11 +254,11 @@
                                     <i class="fas fa-user fa-lg text-white"></i>
                                 </div>
                                 <div class="ms-3">
-                                    <h6 class="mb-0 fw-bold">Ahmad Fauzi</h6>
-                                    <p class="text-muted small mb-0">Bergabung sejak Jan 2024</p>
+                                    <h6 class="mb-0 fw-bold"><?= htmlspecialchars($sellerName) ?></h6>
+                                    <p class="text-muted small mb-0">Bergabung sejak <?= htmlspecialchars($sellerJoined) ?></p>
                                 </div>
                             </div>
-                            <a href="profile.php?id=1" class="btn btn-outline-secondary w-100 btn-sm">
+                            <a href="profile.php?id=<?= htmlspecialchars($ad['user_id']) ?>" class="btn btn-outline-secondary w-100 btn-sm">
                                 <i class="fas fa-user me-2"></i>Lihat Profil
                             </a>
                         </div>
@@ -202,7 +272,7 @@
                                 <tbody>
                                     <tr>
                                         <td class="text-muted small">ID Iklan</td>
-                                        <td class="fw-bold text-end small">#AD00001</td>
+                                        <td class="fw-bold text-end small"><?= htmlspecialchars($idLabel) ?></td>
                                     </tr>
                                     <tr>
                                         <td class="text-muted small">Kondisi</td>
@@ -212,11 +282,11 @@
                                     </tr>
                                     <tr>
                                         <td class="text-muted small">Dilihat</td>
-                                        <td class="fw-bold text-end small">1,234 kali</td>
+                                        <td class="fw-bold text-end small">-</td>
                                     </tr>
                                     <tr>
                                         <td class="text-muted small">Disimpan</td>
-                                        <td class="fw-bold text-end small">56 kali</td>
+                                        <td class="fw-bold text-end small">-</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -299,14 +369,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Change main image when clicking thumbnail
-        function changeImage(imageSrc) {
-            document.getElementById('mainImage').src = imageSrc;
-            
-            // Update active thumbnail
+        function changeImage(el) {
+            const src = el.src;
+            document.getElementById('mainImage').src = src;
             document.querySelectorAll('.thumbnail-image').forEach(img => {
                 img.classList.remove('active');
             });
-            event.target.classList.add('active');
+            el.classList.add('active');
         }
 
         // Toggle favorite button

@@ -16,9 +16,22 @@ try {
     error_log($e->getMessage());
 }
 
-// Fetch ads from database with first image
+// Fetch ads from database with first image (supports category filter)
 $ads = [];
+$selectedCategoryId = isset($_GET['category']) ? (int)$_GET['category'] : null;
+$selectedCategoryName = null;
 try {
+
+    // Find selected category name for display
+    if ($selectedCategoryId) {
+        foreach ($categories as $cat) {
+            if ((int)$cat['id'] === $selectedCategoryId) {
+                $selectedCategoryName = $cat['name'];
+                break;
+            }
+        }
+    }
+
     $query = "SELECT 
                 a.id, 
                 a.title, 
@@ -29,10 +42,20 @@ try {
                 c.name as category_name,
                 (SELECT image FROM ad_images WHERE ad_id = a.id ORDER BY id ASC LIMIT 1) as first_image
               FROM ads a
-              LEFT JOIN categories c ON a.category_id = c.id
-              ORDER BY a.id DESC
-              LIMIT 24";
+              LEFT JOIN categories c ON a.category_id = c.id";
+
+    if ($selectedCategoryId) {
+        $query .= " WHERE a.category_id = :categoryId";
+    }
+
+    $query .= " ORDER BY a.id DESC LIMIT 24";
+
     $stmt = $pdo->prepare($query);
+
+    if ($selectedCategoryId) {
+        $stmt->bindValue(':categoryId', $selectedCategoryId, PDO::PARAM_INT);
+    }
+
     $stmt->execute();
     $ads = $stmt->fetchAll();
 } catch (PDOException $e) {
@@ -154,7 +177,7 @@ function timeAgo($datetime) {
                 <?php else: ?>
                     <?php foreach ($categories as $cat): ?>
                     <div class="col-6 col-md-4 col-lg-3">
-                        <a href="category.php?id=<?= htmlspecialchars($cat['id']) ?>" class="text-decoration-none">
+                        <a href="landingPage.php?category=<?= htmlspecialchars($cat['id']) ?>" class="text-decoration-none">
                             <div class="card border-0 h-100 text-center shadow-sm hover-shadow">
                                 <div class="card-body py-4">
                                     <i class="<?= htmlspecialchars($cat['icon'] ?: 'fas fa-tag') ?> fa-3x mb-3" style="color: var(--primary-color);"></i>
@@ -244,7 +267,12 @@ function timeAgo($datetime) {
                 <!-- MAIN ADS GRID -->
                 <main class="col-lg-9">
                     <div class="mb-4">
-                        <h2 class="fw-bold" style="color: var(--primary-color);">Iklan Terbaru</h2>
+                        <h2 class="fw-bold" style="color: var(--primary-color);">
+                            Iklan Terbaru
+                            <?php if (!empty($selectedCategoryName)): ?>
+                                <span class="badge bg-warning text-dark ms-2" style="font-size: 0.8rem;">Kategori: <?= htmlspecialchars($selectedCategoryName) ?></span>
+                            <?php endif; ?>
+                        </h2>
                     </div>
                     
                     <div class="row g-3">
