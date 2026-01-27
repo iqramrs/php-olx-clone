@@ -66,6 +66,26 @@ $sellerName = $ad['seller_name'] ?: 'Pengguna';
 $sellerJoined = $ad['seller_created'] ? date('M Y', strtotime($ad['seller_created'])) : '-';
 $categoryLink = $ad['category_id'] ? 'landingPage.php?category=' . urlencode($ad['category_id']) : 'landingPage.php';
 $idLabel = '#AD' . str_pad($ad['id'], 5, '0', STR_PAD_LEFT);
+
+// Fetch related ads (same category, exclude current)
+$relatedAds = [];
+if (!empty($ad['category_id'])) {
+    try {
+        $stmt = $pdo->prepare("SELECT a.id, a.title, a.price, a.location, a.release_at,
+                                      (SELECT image FROM ad_images WHERE ad_id = a.id ORDER BY id ASC LIMIT 1) AS first_image
+                               FROM ads a
+                               WHERE a.category_id = :catId AND a.id != :currentId
+                               ORDER BY a.id DESC
+                               LIMIT 4");
+        $stmt->execute([
+            ':catId' => $ad['category_id'],
+            ':currentId' => $adId,
+        ]);
+        $relatedAds = $stmt->fetchAll();
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -192,6 +212,47 @@ $idLabel = '#AD' . str_pad($ad['id'], 5, '0', STR_PAD_LEFT);
                             <p class="mb-0" style="white-space: pre-line;"><?= nl2br(htmlspecialchars($ad['description'] ?: 'Tidak ada deskripsi.')) ?></p>
                         </div>
                     </div>
+
+                    <?php if (!empty($relatedAds)): ?>
+                    <!-- RELATED ADS -->
+                    <div class="card border-0 shadow-sm mt-4">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-2" style="color: var(--primary-color);">Iklan Terkait</h6>
+                            <p class="text-muted small mb-3">Produk lain di kategori yang sama</p>
+                            <div class="row row-cols-1 row-cols-md-2 g-3">
+                                <?php foreach ($relatedAds as $rel): ?>
+                                <div class="col">
+                                    <a href="detail.php?id=<?= htmlspecialchars($rel['id']) ?>" class="text-decoration-none text-dark h-100 d-block">
+                                        <div class="card border-0 h-100 shadow-sm hover-lift">
+                                            <div class="position-relative">
+                                                <img src="<?= htmlspecialchars($rel['first_image'] ?: 'https://placehold.co/600x400?text=No+Image') ?>" 
+                                                     alt="<?= htmlspecialchars($rel['title']) ?>" 
+                                                     class="card-img-top" 
+                                                     style="height: 160px; object-fit: cover;">
+                                                <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2"><?= htmlspecialchars($ad['category_name'] ?: 'Kategori') ?></span>
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <h6 class="card-title text-truncate" style="color: var(--primary-color); min-height: 44px;">
+                                                    <?= htmlspecialchars($rel['title']) ?>
+                                                </h6>
+                                                <p class="fw-bold mb-2" style="color: var(--secondary-color); font-size: 16px;">
+                                                    <?= formatRupiah($rel['price']) ?>
+                                                </p>
+                                                <?php if (!empty($rel['location'])): ?>
+                                                <p class="mb-2 text-muted small d-flex align-items-center gap-1">
+                                                    <i class="fas fa-map-marker-alt"></i> <span><?= htmlspecialchars($rel['location']) ?></span>
+                                                </p>
+                                                <?php endif; ?>
+                                                <p class="text-muted small mb-0"><?= timeAgo($rel['release_at']) ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- SIDEBAR INFO -->
