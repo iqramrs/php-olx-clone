@@ -8,16 +8,19 @@ $success = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
+    $whatsapp = trim($_POST['whatsapp'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
     // Validation
-    if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
+    if (empty($name) || empty($email) || empty($whatsapp) || empty($password) || empty($confirm_password)) {
         $error = 'Semua field wajib diisi!';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Format email tidak valid!';
     } elseif (strlen($email) > 50) {
         $error = 'Email maksimal 50 karakter!';
+    } elseif (strlen($whatsapp) > 15) {
+        $error = 'Nomor WhatsApp maksimal 15 karakter!';
     } elseif (strlen($name) > 100) {
         $error = 'Nama maksimal 100 karakter!';
     } elseif (strlen($password) < 8) {
@@ -38,11 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
                 // Insert new user
-                $sql = "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)";
+                $sql = "INSERT INTO users (name, email, whatsapp, password) VALUES (:name, :email, :whatsapp, :password)";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
                     'name' => $name,
                     'email' => $email,
+                    'whatsapp' => $whatsapp,
                     'password' => $hashed_password
                 ]);
                 
@@ -285,6 +289,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="email" class="form-control" id="email" name="email" placeholder="contoh@email.com" required maxlength="50" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                             </div>
                             <div class="error-message" id="emailError"></div>
+                        </div>
+                        
+                        <!-- WhatsApp -->
+                        <div class="mb-3">
+                            <label for="whatsapp" class="form-label fw-semibold">WhatsApp</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-phone text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="whatsapp" name="whatsapp" placeholder="Masukkan nomor WhatsApp" required maxlength="15" value="<?= htmlspecialchars($_POST['whatsapp'] ?? '') ?>">
+                            </div>
+                            <div class="error-message" id="whatsappError"></div>
                         </div>
 
                         <!-- Password -->

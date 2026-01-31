@@ -2,7 +2,19 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+session_start();
 require_once 'config.php';
+
+// Handle logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: landingPage.php');
+    exit;
+}
+
+// Check login status
+$isLoggedIn = isset($_SESSION['user_id']);
+$userName = $isLoggedIn ? $_SESSION['user_name'] : null;
 
 // Helpers
 function formatRupiah($price) {
@@ -157,10 +169,19 @@ if (!empty($ad['category_id'])) {
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
-                    <a href="login.php" class="nav-link">Login</a>
-                    <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
-                        <i class="fas fa-plus me-1"></i> Jual
-                    </a>
+                    <?php if ($isLoggedIn): ?>
+                        <a href="landingPage.php" class="nav-link">
+                            <i class="fas fa-home me-1"></i>Beranda
+                        </a>
+                        <a href="detail.php?id=<?= htmlspecialchars($_GET['id']) ?>&logout=true" class="btn btn-outline-danger ms-2">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    <?php else: ?>
+                        <a href="login.php" class="nav-link">Login</a>
+                        <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
+                            <i class="fas fa-plus me-1"></i> Jual
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

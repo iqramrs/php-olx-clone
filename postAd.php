@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+// Handle logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: landingPage.php');
+    exit;
+}
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -301,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a class="navbar-brand fw-bold fs-5" href="landingPage.php" style="color: var(--primary-color);">
                 <i class="fas fa-store me-2"></i>OLX CLONE
             </a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -310,6 +317,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="navbar-nav ms-auto">
                     <a href="landingPage.php" class="nav-link">
                         <i class="fas fa-home me-1"></i>Beranda
+                    </a>
+                    <a href="postAd.php?logout=true" class="btn btn-outline-danger ms-2">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
                     </a>
                 </div>
             </div>
