@@ -75,7 +75,7 @@ try {
 
 // Helper function to format price
 function formatRupiah($price) {
-    return 'Rp ' . number_format($price, 0, ',', '.');
+    return 'Rp ' . number_format($price, 0, ',', '.'); 
 }
 
 // Helper function to get time ago
