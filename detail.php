@@ -41,7 +41,7 @@ if ($adId <= 0) {
 // Fetch ad detail
 $ad = null;
 try {
-    $stmt = $pdo->prepare("SELECT a.*, c.name AS category_name, u.name AS seller_name, u.created_at AS seller_created
+    $stmt = $pdo->prepare("SELECT a.*, c.name AS category_name, u.name AS seller_name, u.created_at AS seller_created, u.whatsapp AS seller_whatsapp
                            FROM ads a
                            LEFT JOIN categories c ON a.category_id = c.id
                            LEFT JOIN users u ON a.user_id = u.id
@@ -78,6 +78,16 @@ $sellerName = $ad['seller_name'] ?: 'Pengguna';
 $sellerJoined = $ad['seller_created'] ? date('M Y', strtotime($ad['seller_created'])) : '-';
 $categoryLink = $ad['category_id'] ? 'landingPage.php?category=' . urlencode($ad['category_id']) : 'landingPage.php';
 $idLabel = '#AD' . str_pad($ad['id'], 5, '0', STR_PAD_LEFT);
+
+$rawWhatsapp = $ad['seller_whatsapp'] ?? '';
+$sanitizedWhatsapp = preg_replace('/\D+/', '', $rawWhatsapp);
+if (strpos($sanitizedWhatsapp, '0') === 0) {
+    $sanitizedWhatsapp = '62' . substr($sanitizedWhatsapp, 1);
+}
+$waMessage = 'Halo, saya tertarik dengan iklan "' . ($ad['title'] ?? '') . '"';
+$whatsappUrl = !empty($sanitizedWhatsapp)
+    ? 'https://wa.me/' . $sanitizedWhatsapp . '?text=' . urlencode($waMessage)
+    : null;
 
 // Fetch related ads (same category, exclude current)
 $relatedAds = [];
@@ -312,12 +322,15 @@ if (!empty($ad['category_id'])) {
 
                             <!-- CONTACT BUTTONS -->
                             <div class="mb-3">
-                                <button class="btn w-100 mb-2 py-3" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold; font-size: 14px; border: none;">
-                                    <i class="fas fa-phone me-2"></i>Hubungi Penjual
-                                </button>
-                                <button class="btn btn-outline-dark w-100 py-3" style="font-weight: bold; font-size: 14px;">
-                                    <i class="fas fa-comment-dots me-2"></i>Chat
-                                </button>
+                                <?php if ($whatsappUrl): ?>
+                                    <a href="<?= htmlspecialchars($whatsappUrl) ?>" target="_blank" rel="noopener noreferrer" class="btn w-100 mb-2 py-3" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold; font-size: 14px; border: none;">
+                                        <i class="fab fa-whatsapp me-2"></i>Hubungi Penjual
+                                    </a>
+                                <?php else: ?>
+                                    <button type="button" class="btn w-100 mb-2 py-3 disabled" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold; font-size: 14px; border: none;" title="Nomor WhatsApp penjual tidak tersedia">
+                                        <i class="fab fa-whatsapp me-2"></i>Hubungi Penjual
+                                    </button>
+                                <?php endif; ?>
                             </div>
 
                             <div class="alert alert-warning small mb-0" role="alert" style="font-size: 12px;">
@@ -480,10 +493,6 @@ if (!empty($ad['category_id'])) {
             }
         }
 
-        // Phone number reveal (example)
-        document.querySelector('.btn[style*="background-color: var(--secondary-color)"]').addEventListener('click', function() {
-            alert('Nomor Telepon: 0812-3456-7890\n\nHubungi penjual untuk informasi lebih lanjut.');
-        });
     </script>
 </body>
 </html>

@@ -5,7 +5,8 @@
  */
 
 // Database configuration
-define('DB_HOST', 'localhost');
+define('DB_HOST', '127.0.0.1');
+define('DB_PORT', '3306');
 define('DB_NAME', 'olx_clone');
 define('DB_USER', 'root');
 define('DB_PASS', '');
@@ -21,7 +22,7 @@ $options = [
 
 // Create PDO instance
 try {
-    $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+    $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
     $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
 } catch (PDOException $e) {
     // Log error (in production, log to file instead of displaying)
