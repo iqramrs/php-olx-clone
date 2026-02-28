@@ -20,7 +20,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = (int) $_SESSION['user_id'];
-$userName = $_SESSION['user_name'] ?? 'User';
 $error = '';
 $success = '';
 

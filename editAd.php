@@ -19,7 +19,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = (int) $_SESSION['user_id'];
-$userName = $_SESSION['user_name'] ?? 'User';
 $adId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($adId <= 0) {

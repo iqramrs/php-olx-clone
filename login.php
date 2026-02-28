@@ -73,8 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get remembered email from cookie
-$remembered_email = $_COOKIE['user_email'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="id">

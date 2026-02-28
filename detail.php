@@ -14,7 +14,6 @@ if (isset($_GET['logout'])) {
 
 // Check login status
 $isLoggedIn = isset($_SESSION['user_id']);
-$userName = $isLoggedIn ? $_SESSION['user_name'] : null;
 
 // Helpers
 function formatRupiah($price) {
@@ -170,9 +169,9 @@ if (!empty($ad['category_id'])) {
                 <i class="fas fa-store me-2"></i>OLX CLONE
             </a>
             
-            <form action="search.php" method="GET" class="d-none d-lg-flex flex-grow-1 mx-4">
+            <form action="landingPage.php" method="GET" class="d-none d-lg-flex flex-grow-1 mx-4">
                 <div class="input-group">
-                    <input type="text" name="query" class="form-control border-secondary" placeholder="Cari barang atau tempat..." required>
+                    <input type="text" name="q" class="form-control border-secondary" placeholder="Cari barang atau tempat...">
                     <button class="btn" style="background-color: var(--secondary-color);" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
