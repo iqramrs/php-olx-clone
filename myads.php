@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 
 session_start();
 require_once 'config.php';
+require_once 'helpers/security.php';
 
 // Handle logout
 if (isset($_GET['logout'])) {
@@ -24,6 +25,8 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_ad_id'])) {
+    verify_csrf_or_die();
+
     $deleteAdId = (int) ($_POST['delete_ad_id'] ?? 0);
 
     if ($deleteAdId > 0) {
@@ -222,6 +225,7 @@ function timeAgo($datetime) {
                                             <i class="fas fa-pen me-1"></i>Edit
                                         </a>
                                         <form action="myads.php" method="POST" class="m-0" onsubmit="return confirm('Yakin ingin menghapus iklan ini?');">
+                                            <?= csrf_field(); ?>
                                             <input type="hidden" name="delete_ad_id" value="<?= htmlspecialchars($ad['id']) ?>">
                                             <button type="submit" class="btn btn-outline-danger btn-sm w-100">
                                                 <i class="fas fa-trash me-1"></i>Hapus

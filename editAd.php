@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 
 session_start();
 require_once 'config.php';
+require_once 'helpers/security.php';
 
 // Handle logout
 if (isset($_GET['logout'])) {
@@ -64,6 +65,8 @@ $price = $ad['price'];
 $location = $ad['location'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf_or_die();
+
     $title = trim($_POST['title'] ?? '');
     $category_id = (int) ($_POST['category_id'] ?? 0);
     $description = trim($_POST['description'] ?? '');
@@ -224,6 +227,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-section">
                 <h2 class="section-title">Informasi Iklan</h2>
                 <form method="POST" action="">
+                    <?= csrf_field(); ?>
+
                     <div class="mb-3">
                         <label for="title" class="form-label fw-semibold">Judul Iklan</label>
                         <input type="text" class="form-control" id="title" name="title" maxlength="50" required value="<?= htmlspecialchars($title) ?>">

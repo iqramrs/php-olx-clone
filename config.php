@@ -122,6 +122,20 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!defined('SESSION_TIMEOUT_SECONDS')) {
+    define('SESSION_TIMEOUT_SECONDS', 1800);
+}
+
+if (isset($_SESSION['user_id'])) {
+    $lastActivity = $_SESSION['last_activity'] ?? time();
+    if ((time() - (int)$lastActivity) > SESSION_TIMEOUT_SECONDS) {
+        session_unset();
+        session_destroy();
+        session_start();
+    }
+    $_SESSION['last_activity'] = time();
+}
+
 // Base URL configuration
 define('BASE_URL', 'http://localhost/olx_clone/');
 

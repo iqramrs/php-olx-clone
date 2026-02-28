@@ -15,6 +15,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once 'config.php';
+require_once 'helpers/security.php';
 
 $error = '';
 $success = '';
@@ -33,6 +34,8 @@ try {
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf_or_die();
+
     $title = htmlspecialchars(trim($_POST['title'] ?? ''));
     $category_id = intval($_POST['category_id'] ?? 0);
     $description = htmlspecialchars(trim($_POST['description'] ?? ''));
@@ -56,6 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Prepare uploads (images optional per schema)
             $images = $_FILES['images'] ?? null;
+            $allowedMimes = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/webp' => 'webp',
+            ];
+            $maxImageSize = 2 * 1024 * 1024;
 
             // Create ads directory if not exists
             $ads_dir = __DIR__ . '/assets/ads';
@@ -90,10 +99,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $count = count($images['name']);
                 for ($i = 0; $i < $count; $i++) {
-                    if (!empty($images['name'][$i]) && $images['error'][$i] === UPLOAD_ERR_OK) {
-                        $ext = pathinfo($images['name'][$i], PATHINFO_EXTENSION);
-                        $safe_ext = $ext ? strtolower($ext) : 'jpg';
-                        $file_name = $ad_id . '_' . ($i + 1) . '_' . time() . '.' . $safe_ext;
+                    if (!empty($images['name'][$i])) {
+                        if ($images['error'][$i] !== UPLOAD_ERR_OK) {
+                            throw new Exception('Gagal upload gambar. Silakan coba lagi.');
+                        }
+
+                        if (($images['size'][$i] ?? 0) > $maxImageSize) {
+                            throw new Exception('Ukuran gambar maksimal 2MB per file.');
+                        }
+
+                        $finfo = new finfo(FILEINFO_MIME_TYPE);
+                        $mime = $finfo->file($images['tmp_name'][$i]);
+
+                        if (!isset($allowedMimes[$mime])) {
+                            throw new Exception('Format gambar harus JPG, PNG, atau WEBP.');
+                        }
+
+                        $file_name = bin2hex(random_bytes(16)) . '.' . $allowedMimes[$mime];
                         $destination = $ads_dir . '/' . $file_name;
 
                         if (move_uploaded_file($images['tmp_name'][$i], $destination)) {
@@ -112,7 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Redirect after 2 seconds
             header('Refresh: 2; url=landingPage.php');
         } catch (Exception $e) {
-            $pdo->rollBack();
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             error_log($e->getMessage());
             $error = 'Gagal memposting iklan. Coba lagi nanti.';
         }
@@ -353,6 +377,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form action="postAd.php" method="POST" enctype="multipart/form-data" id="postAdForm">
+                <?= csrf_field(); ?>
                 
                 <!-- INFORMASI PRODUK -->
                 <div class="form-section">

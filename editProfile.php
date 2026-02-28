@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 
 session_start();
 require_once 'config.php';
+require_once 'helpers/security.php';
 
 // Handle logout
 if (isset($_GET['logout'])) {
@@ -42,6 +43,8 @@ $email = $user['email'];
 $whatsapp = $user['whatsapp'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf_or_die();
+
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $whatsapp = trim($_POST['whatsapp'] ?? '');
@@ -231,6 +234,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-section">
                 <h2 class="section-title">Data Akun</h2>
                 <form method="POST" action="">
+                    <?= csrf_field(); ?>
+
                     <div class="mb-3">
                         <label for="name" class="form-label fw-semibold">Nama</label>
                         <input type="text" class="form-control" id="name" name="name" maxlength="100" required value="<?= htmlspecialchars($name) ?>">

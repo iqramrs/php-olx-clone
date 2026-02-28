@@ -1,11 +1,14 @@
 <?php
 require_once 'config.php';
+require_once 'helpers/security.php';
 
 $error = [];
 $success = false;
 
 // Process registration
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf_or_die();
+
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $whatsapp = trim($_POST['whatsapp'] ?? '');
@@ -267,6 +270,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
                     <form action="" method="POST" id="registerForm">
+                        <?= csrf_field(); ?>
+
                         <!-- Nama Lengkap -->
                         <div class="mb-3">
                             <label for="name" class="form-label fw-semibold">Nama Panggilan</label>

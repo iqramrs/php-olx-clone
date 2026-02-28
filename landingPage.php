@@ -17,10 +17,15 @@ $isLoggedIn = isset($_SESSION['user_id']);
 $userName = $isLoggedIn ? $_SESSION['user_name'] : null;
 
 // Filter params
+$searchQuery = trim($_GET['q'] ?? ($_GET['query'] ?? ''));
 $minPrice = isset($_GET['min_price']) && $_GET['min_price'] !== '' ? (float)$_GET['min_price'] : null;
 $maxPrice = isset($_GET['max_price']) && $_GET['max_price'] !== '' ? (float)$_GET['max_price'] : null;
 $locationFilter = strtolower(trim($_GET['location'] ?? ''));
 $sortBy = $_GET['sort'] ?? 'latest';
+$currentPage = max(1, (int)($_GET['page'] ?? 1));
+$perPage = 24;
+$totalAds = 0;
+$totalPages = 1;
 
 $allowedLocations = ['jakarta', 'surabaya', 'bandung', 'medan', 'semarang'];
 if (!in_array($locationFilter, $allowedLocations, true)) {
@@ -49,7 +54,7 @@ try {
     error_log($e->getMessage());
 }
 
-// Fetch ads from database with first image (supports category filter)
+// Fetch ads from database with first image (supports category filter + search + pagination)
 $ads = [];
 $selectedCategoryId = isset($_GET['category']) ? (int)$_GET['category'] : null;
 $selectedCategoryName = null;
@@ -100,9 +105,28 @@ try {
         $params[':location'] = $locationFilter;
     }
 
-    if (!empty($conditions)) {
-        $query .= " WHERE " . implode(' AND ', $conditions);
+    if ($searchQuery !== '') {
+        $conditions[] = "(a.title LIKE :search OR a.description LIKE :search OR a.location LIKE :search)";
+        $params[':search'] = '%' . $searchQuery . '%';
     }
+
+    $whereClause = '';
+    if (!empty($conditions)) {
+        $whereClause = " WHERE " . implode(' AND ', $conditions);
+    }
+
+    $countQuery = "SELECT COUNT(*) FROM ads a" . $whereClause;
+    $countStmt = $pdo->prepare($countQuery);
+    $countStmt->execute($params);
+    $totalAds = (int)$countStmt->fetchColumn();
+    $totalPages = max(1, (int)ceil($totalAds / $perPage));
+
+    if ($currentPage > $totalPages) {
+        $currentPage = $totalPages;
+    }
+
+    $offset = ($currentPage - 1) * $perPage;
+    $query .= $whereClause;
 
     switch ($sortBy) {
         case 'oldest':
@@ -119,7 +143,7 @@ try {
             break;
     }
 
-    $query .= " LIMIT 24";
+    $query .= " LIMIT " . (int)$perPage . " OFFSET " . (int)$offset;
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
@@ -143,6 +167,31 @@ function timeAgo($datetime) {
     if ($diff < 86400) return floor($diff / 3600) . ' jam yang lalu';
     if ($diff < 604800) return floor($diff / 86400) . ' hari yang lalu';
     return date('d M Y', $timestamp);
+}
+
+$baseQueryParams = [];
+if ($selectedCategoryId) {
+    $baseQueryParams['category'] = $selectedCategoryId;
+}
+if ($searchQuery !== '') {
+    $baseQueryParams['q'] = $searchQuery;
+}
+if ($minPrice !== null) {
+    $baseQueryParams['min_price'] = $minPrice;
+}
+if ($maxPrice !== null) {
+    $baseQueryParams['max_price'] = $maxPrice;
+}
+if ($locationFilter !== '') {
+    $baseQueryParams['location'] = $locationFilter;
+}
+if ($sortBy !== 'latest') {
+    $baseQueryParams['sort'] = $sortBy;
+}
+
+function buildPageUrl($page, $params) {
+    $params['page'] = $page;
+    return 'landingPage.php?' . http_build_query($params);
 }
 ?>
 <!DOCTYPE html>
@@ -185,9 +234,12 @@ function timeAgo($datetime) {
                 <i class="fas fa-store me-2"></i>OLX CLONE
             </a>
             
-            <form action="search.php" method="GET" class="d-none d-lg-flex flex-grow-1 mx-4">
+            <form action="landingPage.php" method="GET" class="d-none d-lg-flex flex-grow-1 mx-4">
                 <div class="input-group">
-                    <input type="text" name="query" class="form-control border-secondary" placeholder="Cari barang atau tempat..." required>
+                    <?php if ($selectedCategoryId): ?>
+                        <input type="hidden" name="category" value="<?= htmlspecialchars($selectedCategoryId) ?>">
+                    <?php endif; ?>
+                    <input type="text" name="q" class="form-control border-secondary" placeholder="Cari barang atau tempat..." value="<?= htmlspecialchars($searchQuery) ?>">
                     <button class="btn" style="background-color: var(--secondary-color);" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
@@ -290,6 +342,9 @@ function timeAgo($datetime) {
                                 <?php if ($selectedCategoryId): ?>
                                     <input type="hidden" name="category" value="<?= htmlspecialchars($selectedCategoryId) ?>">
                                 <?php endif; ?>
+                                <?php if ($searchQuery !== ''): ?>
+                                    <input type="hidden" name="q" value="<?= htmlspecialchars($searchQuery) ?>">
+                                <?php endif; ?>
 
                             <!-- Harga Filter -->
                             <div class="mb-4">
@@ -333,7 +388,7 @@ function timeAgo($datetime) {
                             </div>
 
                             <button type="submit" class="btn w-100" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold;">Terapkan Filter</button>
-                            <a href="landingPage.php<?= $selectedCategoryId ? '?category=' . urlencode((string)$selectedCategoryId) : '' ?>" class="btn btn-outline-secondary w-100 mt-2">Reset Filter</a>
+                            <a href="landingPage.php<?= !empty($baseQueryParams['category']) ? '?category=' . urlencode((string)$baseQueryParams['category']) : (!empty($baseQueryParams['q']) ? '?q=' . urlencode((string)$baseQueryParams['q']) : '') ?>" class="btn btn-outline-secondary w-100 mt-2">Reset Filter</a>
                             </form>
                         </div>
                     </div>
@@ -347,6 +402,7 @@ function timeAgo($datetime) {
                             <?php if (!empty($selectedCategoryName)): ?>
                                 <span class="badge bg-warning text-dark ms-2" style="font-size: 0.8rem;">Kategori: <?= htmlspecialchars($selectedCategoryName) ?></span>
                             <?php endif; ?>
+                            <span class="badge bg-light text-dark ms-2" style="font-size: 0.8rem;"><?= htmlspecialchars((string)$totalAds) ?> hasil</span>
                         </h2>
                     </div>
                     
@@ -394,25 +450,30 @@ function timeAgo($datetime) {
                     </div>
 
                     <!-- PAGINATION -->
+                    <?php if ($totalPages > 1): ?>
                     <nav aria-label="Page navigation" class="mt-5">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+                                <a class="page-link" href="<?= $currentPage <= 1 ? '#' : htmlspecialchars(buildPageUrl($currentPage - 1, $baseQueryParams)) ?>" tabindex="-1">Previous</a>
                             </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#" style="background-color: var(--secondary-color); color: var(--primary-color); border-color: var(--secondary-color);">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">Next</a>
+
+                            <?php
+                                $startPage = max(1, $currentPage - 2);
+                                $endPage = min($totalPages, $currentPage + 2);
+                            ?>
+
+                            <?php for ($page = $startPage; $page <= $endPage; $page++): ?>
+                                <li class="page-item <?= $page === $currentPage ? 'active' : '' ?>">
+                                    <a class="page-link" href="<?= htmlspecialchars(buildPageUrl($page, $baseQueryParams)) ?>" <?= $page === $currentPage ? 'style="background-color: var(--secondary-color); color: var(--primary-color); border-color: var(--secondary-color);"' : '' ?>><?= $page ?></a>
+                                </li>
+                            <?php endfor; ?>
+
+                            <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
+                                <a class="page-link" href="<?= $currentPage >= $totalPages ? '#' : htmlspecialchars(buildPageUrl($currentPage + 1, $baseQueryParams)) ?>">Next</a>
                             </li>
                         </ul>
                     </nav>
+                    <?php endif; ?>
                 </main>
             </div>
         </div>

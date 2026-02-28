@@ -1,4 +1,7 @@
 <?php
+ini_set('session.use_strict_mode', '1');
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
 session_start();
 
 // Redirect if already logged in
@@ -8,12 +11,15 @@ if (isset($_SESSION['user_id'])) {
 }
 
 require_once 'config.php';
+require_once 'helpers/security.php';
 
 $error = '';
 $email = '';
 
 // Handle login form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf_or_die();
+
     $email = htmlspecialchars(trim($_POST['email'] ?? ''));
     $password = $_POST['password'] ?? '';
     $remember = isset($_POST['remember']);
@@ -39,13 +45,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Password salah!';
             } else {
                 // Login successful
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
                 $_SESSION['user_email'] = $user['email'];
+                $_SESSION['last_activity'] = time();
 
                 // Remember me functionality
                 if ($remember) {
-                    setcookie('user_email', $email, time() + (30 * 24 * 60 * 60), '/');
+                    setcookie('user_email', $email, [
+                        'expires' => time() + (30 * 24 * 60 * 60),
+                        'path' => '/',
+                        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+                        'httponly' => true,
+                        'samesite' => 'Lax',
+                    ]);
                 }
 
                 // Redirect to landing page
@@ -235,6 +249,8 @@ $remembered_email = $_COOKIE['user_email'] ?? '';
                     <?php endif; ?>
 
                     <form id="loginForm" action="login.php" method="POST">
+                        <?= csrf_field(); ?>
+
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label fw-semibold">Email</label>

@@ -40,6 +40,7 @@ if ($adId <= 0) {
 
 // Fetch ad detail
 $ad = null;
+$adFetchFailed = false;
 try {
     $stmt = $pdo->prepare("SELECT a.*, c.name AS category_name, u.name AS seller_name, u.created_at AS seller_created, u.whatsapp AS seller_whatsapp
                            FROM ads a
@@ -51,11 +52,16 @@ try {
     $ad = $stmt->fetch();
 } catch (PDOException $e) {
     error_log($e->getMessage());
+    $adFetchFailed = true;
+}
+
+if ($adFetchFailed) {
+    header('Location: 500.php');
+    exit;
 }
 
 if (!$ad) {
-    http_response_code(404);
-    echo '<!DOCTYPE html><html><body><p>Iklan tidak ditemukan.</p><a href="landingPage.php">Kembali</a></body></html>';
+    header('Location: 404.php');
     exit;
 }
 
