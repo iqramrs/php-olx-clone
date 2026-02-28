@@ -155,9 +155,6 @@ function timeAgo($datetime) {
                     <a href="postAd.php" class="btn ms-lg-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
                         <i class="fas fa-plus me-1"></i> Jual
                     </a>
-                    <a href="myads.php?logout=true" class="btn btn-outline-danger ms-lg-2 mt-2 mt-lg-0">
-                        <i class="fas fa-sign-out-alt me-1"></i> Logout
-                    </a>
                 </div>
             </div>
         </div>

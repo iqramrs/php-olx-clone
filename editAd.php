@@ -199,9 +199,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="landingPage.php" class="nav-link">
                         <i class="fas fa-home me-1"></i>Beranda
                     </a>
-                    <a href="editAd.php?id=<?= htmlspecialchars($adId) ?>&logout=true" class="btn btn-outline-danger ms-lg-2 mt-2 mt-lg-0">
-                        <i class="fas fa-sign-out-alt me-1"></i> Logout
-                    </a>
                 </div>
             </div>
         </div>

@@ -269,12 +269,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form action="" method="POST" id="registerForm">
                         <!-- Nama Lengkap -->
                         <div class="mb-3">
-                            <label for="name" class="form-label fw-semibold">Nama Lengkap</label>
+                            <label for="name" class="form-label fw-semibold">Nama Panggilan</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-white">
                                     <i class="fas fa-user text-muted"></i>
                                 </span>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan nama lengkap" required maxlength="100" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan nama panggilan" required maxlength="100" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
                             </div>
                             <div class="error-message" id="nameError"></div>
                         </div>

@@ -183,9 +183,6 @@ if (!empty($ad['category_id'])) {
                         <a href="landingPage.php" class="nav-link">
                             <i class="fas fa-home me-1"></i>Beranda
                         </a>
-                        <a href="detail.php?id=<?= htmlspecialchars($_GET['id']) ?>&logout=true" class="btn btn-outline-danger ms-2">
-                            <i class="fas fa-sign-out-alt me-1"></i> Logout
-                        </a>
                     <?php else: ?>
                         <a href="login.php" class="nav-link">Login</a>
                         <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">

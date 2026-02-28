@@ -144,18 +144,35 @@ function timeAgo($datetime) {
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav ms-auto">
+                <div class="navbar-nav ms-auto align-items-lg-center">
                     <?php if ($isLoggedIn): ?>
-                        <span class="nav-link fw-bold" style="color: var(--primary-color);">Halo, <?= htmlspecialchars($userName) ?></span>
-                        <a href="myads.php" class="nav-link">
-                            <i class="fas fa-list me-1"></i>Iklan Saya
-                        </a>
-                        <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
+                        <a href="postAd.php" class="btn ms-lg-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
                             <i class="fas fa-plus me-1"></i> Jual
                         </a>
-                        <a href="landingPage.php?logout=true" class="btn btn-outline-danger ms-2">
-                            <i class="fas fa-sign-out-alt me-1"></i> Logout
-                        </a>
+
+                        <div class="dropdown ms-lg-2 mt-2 mt-lg-0">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i>Halo, <?= htmlspecialchars($userName) ?>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="profile.php?id=<?= htmlspecialchars($_SESSION['user_id']) ?>">
+                                        <i class="fas fa-user me-2"></i>Profile Saya
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="myads.php">
+                                        <i class="fas fa-list me-2"></i>Iklan Saya
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="landingPage.php?logout=true">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     <?php else: ?>
                         <a href="login.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">Login</a>
                     <?php endif; ?>
@@ -171,16 +188,6 @@ function timeAgo($datetime) {
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <h1 class="display-5 fw-bold mb-3">Jual Beli Barang Bekas & Baru</h1>
                     <p class="lead mb-4">Temukan barang yang Anda inginkan dengan harga terbaik dari seluruh Indonesia</p>
-                </div>
-                <div class="col-lg-6">
-                    <form action="search.php" method="GET">
-                        <div class="input-group mb-3">
-                            <input type="text" name="query" class="form-control form-control-lg" placeholder="Cari di seluruh Indonesia..." required>
-                            <button class="btn btn-warning" style="background-color: var(--secondary-color); border: none;" type="submit">
-                                <i class="fas fa-search"></i> Cari
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
