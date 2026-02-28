@@ -184,10 +184,10 @@ if (!empty($ad['category_id'])) {
                             <i class="fas fa-home me-1"></i>Beranda
                         </a>
                     <?php else: ?>
-                        <a href="login.php" class="nav-link">Login</a>
-                        <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
-                            <i class="fas fa-plus me-1"></i> Jual
+                        <a href="landingPage.php" class="nav-link">
+                        <i class="fas fa-home me-1"></i>Beranda
                         </a>
+                        <a href="login.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">Login</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -319,7 +319,11 @@ if (!empty($ad['category_id'])) {
 
                             <!-- CONTACT BUTTONS -->
                             <div class="mb-3">
-                                <?php if ($whatsappUrl): ?>
+                                <?php if (!$isLoggedIn): ?>
+                                    <a href="login.php" class="btn w-100 mb-2 py-3" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold; font-size: 14px; border: none;">
+                                        <i class="fas fa-lock me-2"></i>Login untuk Hubungi Penjual
+                                    </a>
+                                <?php elseif ($whatsappUrl): ?>
                                     <a href="<?= htmlspecialchars($whatsappUrl) ?>" target="_blank" rel="noopener noreferrer" class="btn w-100 mb-2 py-3" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold; font-size: 14px; border: none;">
                                         <i class="fab fa-whatsapp me-2"></i>Hubungi Penjual
                                     </a>

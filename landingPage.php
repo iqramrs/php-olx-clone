@@ -16,6 +16,28 @@ if (isset($_GET['logout'])) {
 $isLoggedIn = isset($_SESSION['user_id']);
 $userName = $isLoggedIn ? $_SESSION['user_name'] : null;
 
+// Filter params
+$minPrice = isset($_GET['min_price']) && $_GET['min_price'] !== '' ? (float)$_GET['min_price'] : null;
+$maxPrice = isset($_GET['max_price']) && $_GET['max_price'] !== '' ? (float)$_GET['max_price'] : null;
+$locationFilter = strtolower(trim($_GET['location'] ?? ''));
+$sortBy = $_GET['sort'] ?? 'latest';
+
+$allowedLocations = ['jakarta', 'surabaya', 'bandung', 'medan', 'semarang'];
+if (!in_array($locationFilter, $allowedLocations, true)) {
+    $locationFilter = '';
+}
+
+$allowedSorts = ['latest', 'oldest', 'price-asc', 'price-desc'];
+if (!in_array($sortBy, $allowedSorts, true)) {
+    $sortBy = 'latest';
+}
+
+if ($minPrice !== null && $maxPrice !== null && $minPrice > $maxPrice) {
+    $temp = $minPrice;
+    $minPrice = $maxPrice;
+    $maxPrice = $temp;
+}
+
 // Fetch categories from database
 $categories = [];
 try {
@@ -55,19 +77,52 @@ try {
               FROM ads a
               LEFT JOIN categories c ON a.category_id = c.id";
 
+    $conditions = [];
+    $params = [];
+
     if ($selectedCategoryId) {
-        $query .= " WHERE a.category_id = :categoryId";
+        $conditions[] = "a.category_id = :categoryId";
+        $params[':categoryId'] = $selectedCategoryId;
     }
 
-    $query .= " ORDER BY a.id DESC LIMIT 24";
+    if ($minPrice !== null) {
+        $conditions[] = "a.price >= :minPrice";
+        $params[':minPrice'] = $minPrice;
+    }
+
+    if ($maxPrice !== null) {
+        $conditions[] = "a.price <= :maxPrice";
+        $params[':maxPrice'] = $maxPrice;
+    }
+
+    if ($locationFilter !== '') {
+        $conditions[] = "LOWER(a.location) = :location";
+        $params[':location'] = $locationFilter;
+    }
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(' AND ', $conditions);
+    }
+
+    switch ($sortBy) {
+        case 'oldest':
+            $query .= " ORDER BY a.release_at ASC";
+            break;
+        case 'price-asc':
+            $query .= " ORDER BY a.price ASC";
+            break;
+        case 'price-desc':
+            $query .= " ORDER BY a.price DESC";
+            break;
+        default:
+            $query .= " ORDER BY a.release_at DESC";
+            break;
+    }
+
+    $query .= " LIMIT 24";
 
     $stmt = $pdo->prepare($query);
-
-    if ($selectedCategoryId) {
-        $stmt->bindValue(':categoryId', $selectedCategoryId, PDO::PARAM_INT);
-    }
-
-    $stmt->execute();
+    $stmt->execute($params);
     $ads = $stmt->fetchAll();
 } catch (PDOException $e) {
     error_log($e->getMessage());
@@ -231,15 +286,20 @@ function timeAgo($datetime) {
                             <h5 class="mb-0" style="color: var(--primary-color);">Filter Pencarian</h5>
                         </div>
                         <div class="card-body">
+                            <form method="GET" action="landingPage.php">
+                                <?php if ($selectedCategoryId): ?>
+                                    <input type="hidden" name="category" value="<?= htmlspecialchars($selectedCategoryId) ?>">
+                                <?php endif; ?>
+
                             <!-- Harga Filter -->
                             <div class="mb-4">
                                 <label class="form-label fw-bold" style="color: var(--primary-color);">Harga (Rp)</label>
                                 <div class="row g-2">
                                     <div class="col-6">
-                                        <input type="number" placeholder="Min" class="form-control" id="minPrice" min="0">
+                                        <input type="number" placeholder="Min" class="form-control" id="minPrice" name="min_price" min="0" value="<?= $minPrice !== null ? htmlspecialchars((string)$minPrice) : '' ?>">
                                     </div>
                                     <div class="col-6">
-                                        <input type="number" placeholder="Max" class="form-control" id="maxPrice">
+                                        <input type="number" placeholder="Max" class="form-control" id="maxPrice" name="max_price" min="0" value="<?= $maxPrice !== null ? htmlspecialchars((string)$maxPrice) : '' ?>">
                                     </div>
                                 </div>
                             </div>
@@ -249,29 +309,14 @@ function timeAgo($datetime) {
                             <!-- Lokasi Filter -->
                             <div class="mb-4">
                                 <label class="form-label fw-bold" style="color: var(--primary-color);">Lokasi</label>
-                                <select class="form-select">
-                                    <option value="">Semua Lokasi</option>
-                                    <option value="jakarta">Jakarta</option>
-                                    <option value="surabaya">Surabaya</option>
-                                    <option value="bandung">Bandung</option>
-                                    <option value="medan">Medan</option>
-                                    <option value="semarang">Semarang</option>
+                                <select class="form-select" name="location">
+                                    <option value="" <?= $locationFilter === '' ? 'selected' : '' ?>>Semua Lokasi</option>
+                                    <option value="jakarta" <?= $locationFilter === 'jakarta' ? 'selected' : '' ?>>Jakarta</option>
+                                    <option value="surabaya" <?= $locationFilter === 'surabaya' ? 'selected' : '' ?>>Surabaya</option>
+                                    <option value="bandung" <?= $locationFilter === 'bandung' ? 'selected' : '' ?>>Bandung</option>
+                                    <option value="medan" <?= $locationFilter === 'medan' ? 'selected' : '' ?>>Medan</option>
+                                    <option value="semarang" <?= $locationFilter === 'semarang' ? 'selected' : '' ?>>Semarang</option>
                                 </select>
-                            </div>
-
-                            <hr>
-
-                            <!-- Kondisi Filter -->
-                            <div class="mb-4">
-                                <label class="fw-bold" style="color: var(--primary-color);">Kondisi</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="condition1" value="baru">
-                                    <label class="form-check-label" for="condition1">Baru</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="condition2" value="bekas">
-                                    <label class="form-check-label" for="condition2">Bekas</label>
-                                </div>
                             </div>
 
                             <hr>
@@ -279,15 +324,17 @@ function timeAgo($datetime) {
                             <!-- Urutkan -->
                             <div class="mb-4">
                                 <label class="form-label fw-bold" style="color: var(--primary-color);">Urutkan Berdasarkan</label>
-                                <select class="form-select">
-                                    <option value="">Terbaru</option>
-                                    <option value="price-asc">Harga Terendah</option>
-                                    <option value="price-desc">Harga Tertinggi</option>
-                                    <option value="popular">Paling Populer</option>
+                                <select class="form-select" name="sort">
+                                    <option value="latest" <?= $sortBy === 'latest' ? 'selected' : '' ?>>Terbaru</option>
+                                    <option value="oldest" <?= $sortBy === 'oldest' ? 'selected' : '' ?>>Terlama</option>
+                                    <option value="price-asc" <?= $sortBy === 'price-asc' ? 'selected' : '' ?>>Harga Terendah</option>
+                                    <option value="price-desc" <?= $sortBy === 'price-desc' ? 'selected' : '' ?>>Harga Tertinggi</option>
                                 </select>
                             </div>
 
-                            <button class="btn w-100" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold;">Terapkan Filter</button>
+                            <button type="submit" class="btn w-100" style="background-color: var(--secondary-color); color: var(--primary-color); font-weight: bold;">Terapkan Filter</button>
+                            <a href="landingPage.php<?= $selectedCategoryId ? '?category=' . urlencode((string)$selectedCategoryId) : '' ?>" class="btn btn-outline-secondary w-100 mt-2">Reset Filter</a>
+                            </form>
                         </div>
                     </div>
                 </aside>
