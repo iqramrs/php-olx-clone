@@ -147,6 +147,9 @@ function timeAgo($datetime) {
                 <div class="navbar-nav ms-auto">
                     <?php if ($isLoggedIn): ?>
                         <span class="nav-link fw-bold" style="color: var(--primary-color);">Halo, <?= htmlspecialchars($userName) ?></span>
+                        <a href="myads.php" class="nav-link">
+                            <i class="fas fa-list me-1"></i>Iklan Saya
+                        </a>
                         <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
                             <i class="fas fa-plus me-1"></i> Jual
                         </a>
@@ -154,10 +157,7 @@ function timeAgo($datetime) {
                             <i class="fas fa-sign-out-alt me-1"></i> Logout
                         </a>
                     <?php else: ?>
-                        <a href="login.php" class="nav-link">Login</a>
-                        <a href="postAd.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
-                            <i class="fas fa-plus me-1"></i> Jual
-                        </a>
+                        <a href="login.php" class="btn ms-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">Login</a>
                     <?php endif; ?>
                 </div>
             </div>

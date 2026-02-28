@@ -149,9 +149,9 @@ function timeAgo($datetime) {
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto align-items-lg-center">
-                    <span class="nav-link fw-bold" style="color: var(--primary-color);">Halo, <?= htmlspecialchars($userName) ?></span>
-                    <a href="landingPage.php" class="nav-link">Beranda</a>
-                    <a href="myads.php" class="nav-link active fw-semibold" style="color: var(--primary-color);">Iklan Saya</a>
+                    <a href="landingPage.php" class="nav-link">
+                        <i class="fas fa-home me-1"></i>Beranda
+                    </a>
                     <a href="postAd.php" class="btn ms-lg-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
                         <i class="fas fa-plus me-1"></i> Jual
                     </a>
@@ -163,12 +163,6 @@ function timeAgo($datetime) {
         </div>
     </nav>
 
-    <section class="py-4" style="background: linear-gradient(135deg, var(--primary-color) 0%, #004d54 100%); color: white;">
-        <div class="container">
-            <h1 class="h3 fw-bold mb-1">Iklan Saya</h1>
-            <p class="mb-0">Lihat semua iklan yang sudah Anda pasang</p>
-        </div>
-    </section>
 
     <section class="py-5">
         <div class="container">

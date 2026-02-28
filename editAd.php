@@ -196,11 +196,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto align-items-lg-center">
-                    <span class="nav-link fw-bold" style="color: var(--primary-color);">Halo, <?= htmlspecialchars($userName) ?></span>
-                    <a href="landingPage.php" class="nav-link">Beranda</a>
-                    <a href="myads.php" class="nav-link">Iklan Saya</a>
-                    <a href="postAd.php" class="btn ms-lg-2" style="background-color: var(--secondary-color); color: var(--primary-color);" role="button">
-                        <i class="fas fa-plus me-1"></i> Jual
+                    <a href="landingPage.php" class="nav-link">
+                        <i class="fas fa-home me-1"></i>Beranda
                     </a>
                     <a href="editAd.php?id=<?= htmlspecialchars($adId) ?>&logout=true" class="btn btn-outline-danger ms-lg-2 mt-2 mt-lg-0">
                         <i class="fas fa-sign-out-alt me-1"></i> Logout
