@@ -131,6 +131,18 @@ Project ini sudah menerapkan beberapa praktik security penting:
 
 ---
 
+## Apa yang Saya Pelajari
+
+- Merancang alur aplikasi dari sisi user journey: dari registrasi, login, posting iklan, hingga kontak penjual.
+- Menjaga keamanan dasar aplikasi web nyata dengan CSRF protection, password hashing, validasi input, dan session management.
+- Menulis query SQL relasional dengan join antar tabel (`users`, `ads`, `categories`, `ad_images`) untuk kebutuhan halaman dinamis.
+- Membangun fitur CRUD secara end-to-end dan memastikan hak akses: user hanya bisa mengelola data miliknya sendiri.
+- Mengelola state filter, sorting, dan pagination melalui URL agar hasil pencarian konsisten dan mudah dibagikan.
+- Menyusun struktur kode yang lebih maintainable dengan helper terpisah, error handling, dan dokumentasi teknis.
+- Meningkatkan kemampuan debugging melalui log error, validasi bertahap, dan pengujian manual setiap flow utama.
+
+---
+
 ## Pengembangan Lanjutan (Roadmap)
 
 - Fitur favorit iklan (persist ke DB).
@@ -138,13 +150,3 @@ Project ini sudah menerapkan beberapa praktik security penting:
 - Dashboard statistik user.
 - Unit test untuk helper dan validasi.
 - Deployment online (VPS/Render/Railway) + custom domain.
-
----
-
-## Author
-
-Nama: (isi nama kamu)
-
-GitHub: (isi profile GitHub kamu)
-
-LinkedIn: (opsional)
