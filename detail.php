@@ -353,9 +353,6 @@ if (!empty($ad['category_id'])) {
                                     <p class="text-muted small mb-0">Bergabung sejak <?= htmlspecialchars($sellerJoined) ?></p>
                                 </div>
                             </div>
-                            <a href="profile.php?id=<?= htmlspecialchars($ad['user_id']) ?>" class="btn btn-outline-secondary w-100 btn-sm">
-                                <i class="fas fa-user me-2"></i>Lihat Profil
-                            </a>
                         </div>
                     </div>
 
